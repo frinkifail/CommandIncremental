@@ -33,6 +33,7 @@ def main(page: ft.Page):
         savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
         contents = json.load(savefile)
         points = contents["points"]
+        print("[save] loaded!")
             
     fpscounter = ft.Text("FPS: 0")
     pointscounter = ft.Text(str(points)+" points")
