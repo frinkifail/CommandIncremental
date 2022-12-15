@@ -40,7 +40,7 @@ def main(page: ft.Page):
     buygen1button = ft.ElevatedButton(f"Buy generator 1 ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1)
     page.add(fpscounter, pointscounter, buygen1button)
     savefiletf = ft.TextField(label="Save ID", hint_text="Save ID")
-    page.add(ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf)
+    page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
     while True:
         starttime = time.time()
         pointscounter.value = str(math.floor(points))+" points | "+str(pointsperspec)+" points per frame"
