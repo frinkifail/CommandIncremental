@@ -64,8 +64,8 @@ def main(page: ft.Page):
     while True:
         # global buymax
         starttime = time.time()
-        pointscounter.value = str(math.floor(points))+" points | "+str(pointsperspec)+" points per frame"
-        buygen1button.text = f"Buy Basic Generator ({gen1['amount']}) | Cost: {gen1['cost']}$"
+        pointscounter.value = "{:e} points | ".format(points)+str("{:.3f}".format(pointsperspec))+" points per frame"
+        buygen1button.text = "Buy Basic Generator ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
         fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
         time.sleep(0.083333333333333328707) # make the game capped at 12 fps
