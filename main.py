@@ -55,7 +55,7 @@ def main(page: ft.Page):
     buymaxbtn = ft.TextButton(f"Buy Max: {buymax}", on_click=handleBuyMax)
     page.add(buymaxbtn)
     pointscounter = ft.Text(str(points)+" points")
-    buygen1button = ft.ElevatedButton(f"Buy generator 1 ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1)
+    buygen1button = ft.ElevatedButton(f"Buy Basic Generator ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1)
     page.add(fpscounter, pointscounter, buygen1button)
     savefiletf = ft.TextField(label="Save ID", hint_text="Save ID")
     debugpointstf = ft.TextField(label="Set Points")
