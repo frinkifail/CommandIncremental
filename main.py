@@ -1,8 +1,9 @@
 import flet as ft
 from threading import Thread
 import time
-import math
+# import math
 import json
+import notificationFlet as ftn
 
 points: float = 0
 pointsperspec: float = 0.108
@@ -13,9 +14,18 @@ gen1 = {
 }
 buymax = False
 saveenabled = True
+updateinterval = 0.0025
+version: str = "1.2.0"
 
 def main(page: ft.Page):
     global buymax
+    page.title = "CommandIncremental"
+    page.theme_mode = ft.ThemeMode.DARK
+    page.scroll = "adaptive"
+    page.window_frameless = True
+    page.window_maximizable = False
+    page.window_width = 800
+    page.window_height = 600
     # buymax = False
     def buygen1(e):
         global points, gen1, pointsperspec
@@ -67,6 +77,10 @@ def main(page: ft.Page):
         global points
         handleDebugPts(None)
         points = 1e+70000000
+    def handleUpdateInterval(e):
+        global updateinterval
+        updateinterval = float(updateintervaltf.value)
+        print("[debug/updateinterval] successfully updated update interval!")
     fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(f"Buy Max: {buymax}", on_click=handleBuyMax)
     # page.add(buymaxbtn)
@@ -75,6 +89,8 @@ def main(page: ft.Page):
     # page.add(fpscounter, pointscounter, buygen1button)
     savefiletf = ft.TextField(label="Save ID", hint_text="Save ID")
     debugpointstf = ft.TextField(label="Set Points")
+    updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval, width=200)
+    overflowwarn = ftn.createNoti(None, "Warning!", "Points are overflowing! Update thread has stopped!")
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
     # page.add(ft.Row([debugpointstf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
     
@@ -84,7 +100,8 @@ def main(page: ft.Page):
         page.views.append(
             ft.View(
                 "/", [
-                    ft.AppBar(title=ft.Text("CommandIncremental"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"))]),
+                    ft.AppBar(title=ft.Text("CommandIncremental"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings")), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED)]),
+                    ft.WindowDragArea(ft.Text("Drag me!")),
                     pointscounter, buygen1button,
                     ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]),
                     ft.Row([debugpointstf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
@@ -107,6 +124,7 @@ def main(page: ft.Page):
                 ft.View(
                     "/settings", [
                         ft.AppBar(title=ft.Text("CommandIncremental | Settings")),
+                        updateintervaltf,
                         ft.TextButton("Infinite Points", on_click=handleInfPoints)
                     ]
                 )
@@ -130,14 +148,30 @@ def main(page: ft.Page):
         buygen1button.text = "Buy Basic Generator ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
-        time.sleep(0.0025) # make the game capped at 12 fps (0.083333333333333328707 sec)
+        time.sleep(updateinterval) # make the game capped at 12 fps (0.083333333333333328707 sec) # nvm its changable # also the default value is now 0.0025
         if buymax is True:
             buygen1(None)
+        if points > 1e+308:
+            page.views[0].controls.append(overflowwarn[0])
+            page.views[0].update()
+            overflowwarn[2](None)
+            # time.sleep(0.001)
+            time.sleep(0.001)
+            overflowwarn[3](None)
+            time.sleep(1)
+            page.views[0].controls.pop()
+            time.sleep(0.25)
+            page.window_close()
+            quit()
 
 def update():
     while True:
         global points
-        points += pointsperspec
+        if not points > 1e+308:
+            points += pointsperspec
+        else:
+            print("[debug] invalid points value, exiting...")
+            quit()
         time.sleep(0.1)
 
 if __name__ == "__main__":
