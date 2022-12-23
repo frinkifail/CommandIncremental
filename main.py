@@ -5,10 +5,10 @@ import time
 import json
 import notificationFlet as ftn
 
-points: float = 0
-pointsperspec: float = 0.108
-maxpoints: float = 100
-maxpointscost = 75
+silicon: float = 0
+siliconperspec: float = 0.108
+maxsilicon: float = 100
+maxsiliconcost = 75
 gen1 = {
     "cost": 10,
     "growth": 1.28,
@@ -19,7 +19,7 @@ saveenabled = True
 updateinterval = 0.0025
 version: str = "1.2.0"
 # Other shit used in main function
-debugpointsnotiinuse = False
+debugsiliconnotiinuse = False
 
 def main(page: ft.Page):
     global buymax
@@ -31,56 +31,56 @@ def main(page: ft.Page):
     page.window_width = 800
     page.window_height = 600
     # Other Variables
-    # debugpointsnotiinuse = False
+    # debugsiliconnotiinuse = False
     # fuckerinas it doesn't work!
     # buymax = False
     def buygen1(e):
-        global points, gen1, pointsperspec
-        if points >= gen1["cost"]:
-            points -= gen1["cost"]
+        global silicon, gen1, siliconperspec
+        if silicon >= gen1["cost"]:
+            silicon -= gen1["cost"]
             gen1["cost"] *= gen1["growth"]
             gen1["amount"] += 1
-            pointsperspec += 0.18
+            siliconperspec += 0.18
             print("[gen/1] bought!")
         else:
-            print("[gen/1] not enough points")
+            print("[gen/1] not enough silicon")
         
     def handleSave(e):
         if saveenabled:
             savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
-            savefile.write("{\"points\": %s}" % points)
+            savefile.write("{\"silicon\": %s}" % silicon)
             print("[save] saved!")
         else:
             print("[save] failed to save: save is disabled")
     def handleLoad(e):
-        global points
+        global silicon
         if saveenabled:
             savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
             contents = json.load(savefile)
-            points = contents["points"]
+            silicon = contents["silicon"]
             print("[save] loaded!")
         else:
             print("[save] failed to load: save is disabled")
     def handleDebugPts(e):
-        global points, saveenabled, debugpointsnotiinuse
+        global silicon, saveenabled, debugsiliconnotiinuse
         try:
-            if debugpointstf.value != '':
-                points = int(debugpointstf.value)
-                print(f"[debug] set points to {0}".format(int(debugpointstf.value)))
-                if not debugpointsnotiinuse:
-                    debugpointsnotiinuse = True
-                    page.views[0].controls.append(debugpointsnoti[0])
+            if debugsilicontf.value != '':
+                silicon = int(debugsilicontf.value)
+                print(f"[debug] set silicon to {0}".format(int(debugsilicontf.value)))
+                if not debugsiliconnotiinuse:
+                    debugsiliconnotiinuse = True
+                    page.views[0].controls.append(debugsiliconnoti[0])
                     page.views[0].update()
-                    debugpointsnoti[2](None)
+                    debugsiliconnoti[2](None)
                     time.sleep(0.001)
-                    debugpointsnoti[3](None)
+                    debugsiliconnoti[3](None)
                     time.sleep(1)
                     page.views[0].controls.pop()
-                    debugpointsnotiinuse = False
+                    debugsiliconnotiinuse = False
                 else:
                     print("[debug/noti] notification currently in use; will not continue until finished")
             else:
-                print("[debug] will not set points; debug points text field is invalid")
+                print("[debug] will not set silicon; debug silicon text field is invalid")
             saveenabled = False
             print("[save/debug] save has been disabled due to enabling debug mode!")
         except Exception: # ugh it doesn't catch because threads fucking suck
@@ -95,37 +95,37 @@ def main(page: ft.Page):
             buymax = False
             buymaxbtn.text = f"Buy Max: {buymax}"
             page.update()
-    def handleInfPoints(e):
-        global points
+    def handleInfSilicon(e):
+        global silicon
         handleDebugPts(None)
-        points = 1e+70000000
+        silicon = 1e+70000000
     def handleUpdateInterval(e):
         global updateinterval
         updateinterval = float(updateintervaltf.value)
         print("[debug/updateinterval] successfully updated update interval!")
     def handleUpgradeMax(e):
-        global maxpoints, maxpointscost, points
-        if points >= maxpointscost:
-            points -= maxpointscost
-            maxpointscost *= 1.41
-            maxpoints *= 1.38
+        global maxsilicon, maxsiliconcost, silicon
+        if silicon >= maxsiliconcost:
+            silicon -= maxsiliconcost
+            maxsiliconcost *= 1.41
+            maxsilicon *= 1.38
             print("[main/upgrades] bank size upgraded")
         else:
-            print("[main/upgrades] not enough points!")
+            print("[main/upgrades] not enough silicon!")
         page.views[1].update() # no idea how to make this work lmfao
     fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(f"Buy Max: {buymax}", on_click=handleBuyMax)
     # page.add(buymaxbtn)
-    pointscounter = ft.Text(str(points)+" points", tooltip="points counter yuh")
+    siliconcounter = ft.Text(str(silicon)+" silicon", tooltip="silicon counter yuh")
     buygen1button = ft.ElevatedButton(f"Buy Basic Generator ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1, tooltip="buy them **basic** generators")
-    # page.add(fpscounter, pointscounter, buygen1button)
+    # page.add(fpscounter, siliconcounter, buygen1button)
     savefiletf = ft.TextField(label="Save ID", tooltip="enter your save id here")
-    debugpointstf = ft.TextField(label="Set Points", tooltip="set your points to specific value (debugging purposes + saving will be disabled)")
-    updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval, width=200, tooltip="sets your update interval (doesn't make you generate points faster ._.)")
-    overflowwarn = ftn.createNoti(None, "Warning!", "Points are overflowing! Update thread has stopped!")
-    debugpointsnoti = ftn.createNoti(None, "Debug", "Changed points!")
+    debugsilicontf = ft.TextField(label="Set Silicon", tooltip="set your silicon to specific value (debugging purposes + saving will be disabled)")
+    updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval, width=200, tooltip="sets your update interval (doesn't make you generate silicon faster ._.)")
+    overflowwarn = ftn.createNoti(None, "Warning!", "Silicon are overflowing! Update thread has stopped!")
+    debugsiliconnoti = ftn.createNoti(None, "Debug", "Changed silicon!")
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
-    # page.add(ft.Row([debugpointstf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
+    # page.add(ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
     
     def buildApp(approute):
         page.views.clear()
@@ -135,9 +135,9 @@ def main(page: ft.Page):
                 "/", [
                     ft.AppBar(title=ft.Text("CommandIncremental", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED, tooltip="Quit Game")]),
                     ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"), padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window"),
-                    pointscounter, buygen1button,
+                    siliconcounter, buygen1button,
                     ft.Row([ft.ElevatedButton("Save", on_click=handleSave, tooltip="saves the game according to your save id"), ft.ElevatedButton("Load", on_click=handleLoad, tooltip="loads the game according to your save id"), savefiletf]),
-                    ft.Row([debugpointstf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
+                    ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
                     buymaxbtn,
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
                     
@@ -158,7 +158,7 @@ def main(page: ft.Page):
                     "/settings", [
                         ft.AppBar(title=ft.Text("CommandIncremental | Settings")),
                         updateintervaltf
-                        # ft.TextButton("Infinite Points", on_click=handleInfPoints, tooltip="crashes the game") # tooltip used to be "gives you infinite points (for debugging purposes + saving *will* be disabled)"
+                        # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)"
                     ]
                 )
             )
@@ -169,7 +169,7 @@ def main(page: ft.Page):
                         ft.AppBar(title=ft.Text("CommandIncremental | Upgrades")),
                         ft.Column([
                             ft.Divider(height=3, thickness=3),
-                            ft.ElevatedButton(f"Max Points [{maxpoints}] | Cost: [{maxpointscost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
+                            ft.ElevatedButton(f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
                         ])
                     ]
                 )
@@ -189,14 +189,14 @@ def main(page: ft.Page):
     while True:
         # global buymax
         starttime = time.time()
-        pointscounter.value = "{:e} points | ".format(points)+str("{:.3f}".format(pointsperspec))+" points per frame"
+        siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per frame"
         buygen1button.text = "Buy Basic Generator ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
         time.sleep(updateinterval) # make the game capped at 12 fps (0.083333333333333328707 sec) # nvm its changable # also the default value is now 0.0025
         if buymax is True:
             buygen1(None)
-        if points > 1e+308:
+        if silicon > 1e+308:
             page.views[0].controls.append(overflowwarn[0])
             page.views[0].update()
             overflowwarn[2](None)
@@ -211,14 +211,14 @@ def main(page: ft.Page):
 
 def update():
     while True:
-        global points
-        if not points > 1e+308:
-            if not points >= maxpoints:
-                points += pointsperspec
+        global silicon
+        if not silicon > 1e+308:
+            if not silicon >= maxsilicon:
+                silicon += siliconperspec
             else:
-                print("[main/points] cannot continue, points reached max")
+                print("[main/silicon] cannot continue, silicon reached max")
         else:
-            print("[debug] invalid points value, exiting...")
+            print("[debug] invalid silicon value, exiting...")
             quit()
         time.sleep(0.1)
 
