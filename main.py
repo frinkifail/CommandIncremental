@@ -7,6 +7,8 @@ import notificationFlet as ftn
 
 points: float = 0
 pointsperspec: float = 0.108
+maxpoints: float = 100
+maxpointscost = 75
 gen1 = {
     "cost": 10,
     "growth": 1.28,
@@ -16,6 +18,8 @@ buymax = False
 saveenabled = True
 updateinterval = 0.0025
 version: str = "1.2.0"
+# Other shit used in main function
+debugpointsnotiinuse = False
 
 def main(page: ft.Page):
     global buymax
@@ -26,6 +30,9 @@ def main(page: ft.Page):
     page.window_maximizable = False
     page.window_width = 800
     page.window_height = 600
+    # Other Variables
+    # debugpointsnotiinuse = False
+    # fuckerinas it doesn't work!
     # buymax = False
     def buygen1(e):
         global points, gen1, pointsperspec
@@ -55,14 +62,29 @@ def main(page: ft.Page):
         else:
             print("[save] failed to load: save is disabled")
     def handleDebugPts(e):
-        global points, saveenabled
-        if debugpointstf.value != '':
-            points = int(debugpointstf.value)
-            print(f"[debug] set points to {0}".format(int(debugpointstf.value)))
-        else:
-            print("[debug] will not set points; debug points text field is invalid")
-        saveenabled = False
-        print("[save/debug] save has been disabled due to enabling debug mode!")
+        global points, saveenabled, debugpointsnotiinuse
+        try:
+            if debugpointstf.value != '':
+                points = int(debugpointstf.value)
+                print(f"[debug] set points to {0}".format(int(debugpointstf.value)))
+                if not debugpointsnotiinuse:
+                    debugpointsnotiinuse = True
+                    page.views[0].controls.append(debugpointsnoti[0])
+                    page.views[0].update()
+                    debugpointsnoti[2](None)
+                    time.sleep(0.001)
+                    debugpointsnoti[3](None)
+                    time.sleep(1)
+                    page.views[0].controls.pop()
+                    debugpointsnotiinuse = False
+                else:
+                    print("[debug/noti] notification currently in use; will not continue until finished")
+            else:
+                print("[debug] will not set points; debug points text field is invalid")
+            saveenabled = False
+            print("[save/debug] save has been disabled due to enabling debug mode!")
+        except Exception: # ugh it doesn't catch because threads fucking suck
+            print("[debug/noti] wow, thats funny, see, the user switched views before i could remove the notification, in conclusion, fuck you")
     def handleBuyMax(e):
         global buymax
         if buymax is False:
@@ -81,16 +103,27 @@ def main(page: ft.Page):
         global updateinterval
         updateinterval = float(updateintervaltf.value)
         print("[debug/updateinterval] successfully updated update interval!")
+    def handleUpgradeMax(e):
+        global maxpoints, maxpointscost, points
+        if points >= maxpointscost:
+            points -= maxpointscost
+            maxpointscost *= 1.41
+            maxpoints *= 1.38
+            print("[main/upgrades] bank size upgraded")
+        else:
+            print("[main/upgrades] not enough points!")
+        page.views[1].update() # no idea how to make this work lmfao
     fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(f"Buy Max: {buymax}", on_click=handleBuyMax)
     # page.add(buymaxbtn)
-    pointscounter = ft.Text(str(points)+" points")
-    buygen1button = ft.ElevatedButton(f"Buy Basic Generator ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1)
+    pointscounter = ft.Text(str(points)+" points", tooltip="points counter yuh")
+    buygen1button = ft.ElevatedButton(f"Buy Basic Generator ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1, tooltip="buy them **basic** generators")
     # page.add(fpscounter, pointscounter, buygen1button)
-    savefiletf = ft.TextField(label="Save ID", hint_text="Save ID")
-    debugpointstf = ft.TextField(label="Set Points")
-    updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval, width=200)
+    savefiletf = ft.TextField(label="Save ID", tooltip="enter your save id here")
+    debugpointstf = ft.TextField(label="Set Points", tooltip="set your points to specific value (debugging purposes + saving will be disabled)")
+    updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval, width=200, tooltip="sets your update interval (doesn't make you generate points faster ._.)")
     overflowwarn = ftn.createNoti(None, "Warning!", "Points are overflowing! Update thread has stopped!")
+    debugpointsnoti = ftn.createNoti(None, "Debug", "Changed points!")
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
     # page.add(ft.Row([debugpointstf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
     
@@ -100,10 +133,10 @@ def main(page: ft.Page):
         page.views.append(
             ft.View(
                 "/", [
-                    ft.AppBar(title=ft.Text("CommandIncremental"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings")), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED)]),
-                    ft.WindowDragArea(ft.Text("Drag me!")),
+                    ft.AppBar(title=ft.Text("CommandIncremental", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED, tooltip="Quit Game")]),
+                    ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"), padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window"),
                     pointscounter, buygen1button,
-                    ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]),
+                    ft.Row([ft.ElevatedButton("Save", on_click=handleSave, tooltip="saves the game according to your save id"), ft.ElevatedButton("Load", on_click=handleLoad, tooltip="loads the game according to your save id"), savefiletf]),
                     ft.Row([debugpointstf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
                     buymaxbtn,
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
@@ -115,7 +148,7 @@ def main(page: ft.Page):
             page.views.append(
                 ft.View(
                     "/test", [
-                        ft.Text("Hello World!")
+                        ft.Text("Hello World!", tooltip="Testing Page | Why are you here?")
                     ]
                 )
             )
@@ -124,8 +157,20 @@ def main(page: ft.Page):
                 ft.View(
                     "/settings", [
                         ft.AppBar(title=ft.Text("CommandIncremental | Settings")),
-                        updateintervaltf,
-                        ft.TextButton("Infinite Points", on_click=handleInfPoints)
+                        updateintervaltf
+                        # ft.TextButton("Infinite Points", on_click=handleInfPoints, tooltip="crashes the game") # tooltip used to be "gives you infinite points (for debugging purposes + saving *will* be disabled)"
+                    ]
+                )
+            )
+        elif page.route == "/upgrades":
+            page.views.append(
+                ft.View(
+                    "/upgrades", [
+                        ft.AppBar(title=ft.Text("CommandIncremental | Upgrades")),
+                        ft.Column([
+                            ft.Divider(height=3, thickness=3),
+                            ft.ElevatedButton(f"Max Points [{maxpoints}] | Cost: [{maxpointscost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
+                        ])
                     ]
                 )
             )
@@ -168,7 +213,10 @@ def update():
     while True:
         global points
         if not points > 1e+308:
-            points += pointsperspec
+            if not points >= maxpoints:
+                points += pointsperspec
+            else:
+                print("[main/points] cannot continue, points reached max")
         else:
             print("[debug] invalid points value, exiting...")
             quit()
