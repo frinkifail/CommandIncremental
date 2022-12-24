@@ -18,7 +18,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.9" # forgor to bump version
+version: str = "1.3" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -212,7 +212,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.7.4 | Forgot to make the buymax buy the upgrade :skull:"),
                         ft.Text("1.2.7.5 | ong it crashes; i fixed it"),
                         ft.Text("1.2.8 | Made scientific notation optional"),
-                        ft.Text("1.2.9 | Upgrade Max actually works now")
+                        ft.Text("1.2.9 | Upgrade Max actually works now"),
+                        ft.Text("1.3 | Saving overhaul")
                     ]
                 )
             )
