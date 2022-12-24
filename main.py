@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.7.3" # forgor to bump version
+version: str = "1.2.7.4" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 
@@ -188,7 +188,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.7 | Added changelog to track stuff"),
                         ft.Text("1.2.7.1 | Minor spelling mistake *earth collapsing*"),
                         ft.Text("1.2.7.2 | Fixed debug silicon notification not showing"),
-                        ft.Text("1.2.7.3 | Ok, the notification is slow, but it works alright?")
+                        ft.Text("1.2.7.3 | Ok, the notification is slow, but it works alright?"),
+                        ft.Text("1.2.7.4 | Forgot to make the buymax buy the upgrade :skull:")
                     ]
                 )
             )
@@ -214,6 +215,7 @@ def main(page: ft.Page):
         time.sleep(updateinterval) # make the game capped at 12 fps (0.083333333333333328707 sec) # nvm its changable # also the default value is now 0.0025
         if buymax is True:
             buygen1(None)
+            handleUpgradeMax(None)
         if silicon > 1e+308:
             page.views[0].controls.append(overflowwarn[0])
             page.views[0].update()
