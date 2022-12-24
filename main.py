@@ -19,7 +19,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.4.1" # forgor to bump version
+version: str = "1.4.2" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -207,7 +207,7 @@ def main(page: ft.Page):
                         ft.Row([
                             ft.ElevatedButton("Save", on_click=handleNewSave, tooltip="saves the game according to your save id"),
                             ft.ElevatedButton("Load", on_click=handleNewLoad, tooltip="loads the game according to your save id"),
-                            savefiletf
+                            # savefiletf
                         ]),
                         notatecheckbox,
                         darktheme
@@ -245,7 +245,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.9 | Upgrade Max actually works now"),
                         ft.Text("1.3 | Saving overhaul"),
                         ft.Text("1.4 | Saving overhaul.... again..."),
-                        ft.Text("1.4.1 | Dark Theme is now optional (I know the scary people)")
+                        ft.Text("1.4.1 | Dark Theme is now optional (I know the scary people)"),
+                        ft.Text("1.4.2 | Save File Text Field is now completely useless due to Replit!")
                     ]
                 )
             )
