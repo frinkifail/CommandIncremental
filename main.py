@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.6" # forgor to bump version
+version: str = "1.2.7" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 
@@ -183,7 +183,9 @@ def main(page: ft.Page):
                     "/debug", [
                         ft.AppBar(title=ft.Text("CommandIncremental | Debug Utilities")),
                         ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
-                        ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="gives you basically infinite silicon (for debugging purposes + saving *will* be disabled)")
+                        ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="gives you basically infinite silicon (for debugging purposes + saving *will* be disabled)"),
+                        ft.Text("Changelog:", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+                        ft.Text("1.2.7 | Added changelog to track stuff")
                     ]
                 )
             )
