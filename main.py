@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.0"
+version: str = "1.2.6" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 
@@ -133,7 +133,7 @@ def main(page: ft.Page):
         page.views.append(
             ft.View(
                 "/", [
-                    ft.AppBar(title=ft.Text("CommandIncremental", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED, tooltip="Quit Game")]),
+                    ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED, tooltip="Quit Game")]),
                     ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"), padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window"),
                     siliconcounter, buygen1button,
                     buymaxbtn,
