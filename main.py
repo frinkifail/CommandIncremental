@@ -19,7 +19,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.4.3" # forgor to bump version
+version: str = "1.4.3.1" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -181,7 +181,7 @@ def main(page: ft.Page):
         page.views.append(
             ft.View(
                 "/", [
-                    ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CLOSE, on_click=lambda _: page.window_close(), icon_color=ft.colors.RED, tooltip="Quit Game")]),
+                    ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities")]),
                     # ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"), padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window"),
                     siliconcounter, buygen1button,
                     buymaxbtn,
@@ -247,7 +247,8 @@ def main(page: ft.Page):
                         ft.Text("1.4 | Saving overhaul.... again..."),
                         ft.Text("1.4.1 | Dark Theme is now optional (I know the scary people)"),
                         ft.Text("1.4.2 | Save File Text Field is now completely useless due to Replit!"),
-                        ft.Text("1.4.3 | Remove Window Drag Area cus this is turning into a browser game")
+                        ft.Text("1.4.3 | Remove Window Drag Area cus this is turning into a browser game"),
+                        ft.Text("1.4.3.1 | I forgot to remove the quit button too")
                     ]
                 )
             )
