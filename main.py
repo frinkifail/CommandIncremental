@@ -4,6 +4,7 @@ import time
 # import math
 import json
 import notificationFlet as ftn
+import os
 
 silicon: float = 0
 siliconperspec: float = 0.108
@@ -48,17 +49,29 @@ def main(page: ft.Page):
         
     def handleSave(e):
         if saveenabled:
-            savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
-            savefile.write("{\"silicon\": %s, \"siliconperspec\": %s, \"gen1\": %s}" % (silicon, siliconperspec, gen1))
+            try:
+                savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
+            except:
+                try:
+                    os.mkdir("saves/"+savefiletf.value)
+                    newsavefile = open("saves/"+savefiletf.value+"/save.json", mode='x')
+                    newsavefile.close()
+                    savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
+                except Exception as e:
+                    print(f"[save] failed to save: {e}")
+            savefile.truncate(0)
+            savefile.write("{\"silicon\": %s, \"siliconperspec\": %s, \"gen1\": {\"cost\": %s, \"amount\": %s}, \"maxsilicon\": %s, \"maxsilicon_cost\": %s}" % (silicon, siliconperspec, gen1["cost"], gen1["amount"], maxsilicon, maxsiliconcost))
             print("[save] saved!")
         else:
             print("[save] failed to save: save is disabled")
     def handleLoad(e):
-        global silicon
+        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost
         if saveenabled:
             savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
             contents = json.load(savefile)
             silicon = contents["silicon"]
+            siliconperspec = contents["siliconperspec"]
+            gen1.update({"cost":contents["gen1"]["cost"], "amount":contents["gen1"]["amount"]})
             print("[save] loaded!")
         else:
             print("[save] failed to load: save is disabled")
