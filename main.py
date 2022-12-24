@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.8" # forgor to bump version
+version: str = "1.2.9" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -110,6 +110,7 @@ def main(page: ft.Page):
             silicon -= maxsiliconcost
             maxsiliconcost *= 1.41
             maxsilicon *= 1.38
+            upgrades_max.text = f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]" # ahhhh im so stupid
             print("[main/upgrades] bank size upgraded")
         else:
             print("[main/upgrades] not enough silicon!")
@@ -127,6 +128,7 @@ def main(page: ft.Page):
     debugsiliconnoti = ftn.createNoti(None, "Debug", "Changed silicon amount!")
     notatecheckbox = ft.Checkbox(label="Scientific Notation")
     notatecheckbox.value = True
+    upgrades_max = ft.ElevatedButton(f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
     # notatecheckbox.value
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
     # page.add(ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
@@ -177,7 +179,7 @@ def main(page: ft.Page):
                         ft.AppBar(title=ft.Text("CommandIncremental | Upgrades")),
                         ft.Column([
                             ft.Divider(height=3, thickness=3),
-                            ft.ElevatedButton(f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
+                            upgrades_max
                         ])
                     ]
                 )
@@ -196,7 +198,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.7.3 | Ok, the notification is slow, but it works alright?"),
                         ft.Text("1.2.7.4 | Forgot to make the buymax buy the upgrade :skull:"),
                         ft.Text("1.2.7.5 | ong it crashes; i fixed it"),
-                        ft.Text("1.2.8 | Made scientific notation optional")
+                        ft.Text("1.2.8 | Made scientific notation optional"),
+                        ft.Text("1.2.9 | Upgrade Max actually works now")
                     ]
                 )
             )
