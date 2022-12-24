@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.7" # forgor to bump version
+version: str = "1.2.7.1" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 
@@ -185,7 +185,8 @@ def main(page: ft.Page):
                         ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
                         ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="gives you basically infinite silicon (for debugging purposes + saving *will* be disabled)"),
                         ft.Text("Changelog:", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
-                        ft.Text("1.2.7 | Added changelog to track stuff")
+                        ft.Text("1.2.7 | Added changelog to track stuff"),
+                        ft.Text("1.2.7.1 | Minor spelling mistake *earth collapsing*")
                     ]
                 )
             )
@@ -204,7 +205,7 @@ def main(page: ft.Page):
     while True:
         # global buymax
         starttime = time.time()
-        siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 secs"
+        siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
         buygen1button.text = "Buy Basic Silicon Factory ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
