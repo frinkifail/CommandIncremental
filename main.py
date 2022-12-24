@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.7.4" # forgor to bump version
+version: str = "1.2.7.5" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 
@@ -112,7 +112,7 @@ def main(page: ft.Page):
             print("[main/upgrades] bank size upgraded")
         else:
             print("[main/upgrades] not enough silicon!")
-        page.views[1].update() # no idea how to make this work lmfao
+        # page.views[1].update() # no idea how to make this work lmfao # faulty line 😡
     fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(f"Buy Max: {buymax}", on_click=handleBuyMax, tooltip="buy factories until you're outta silicons")
     # page.add(buymaxbtn)
@@ -189,7 +189,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.7.1 | Minor spelling mistake *earth collapsing*"),
                         ft.Text("1.2.7.2 | Fixed debug silicon notification not showing"),
                         ft.Text("1.2.7.3 | Ok, the notification is slow, but it works alright?"),
-                        ft.Text("1.2.7.4 | Forgot to make the buymax buy the upgrade :skull:")
+                        ft.Text("1.2.7.4 | Forgot to make the buymax buy the upgrade :skull:"),
+                        ft.Text("1.2.7.5 | ong it crashes; i fixed it")
                     ]
                 )
             )
