@@ -17,7 +17,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.6" # forgor to bump version
+version: str = "1.2.7.3" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 
@@ -69,13 +69,13 @@ def main(page: ft.Page):
                 print(f"[debug] set silicon to {0}".format(int(debugsilicontf.value)))
                 if not debugsiliconnotiinuse:
                     debugsiliconnotiinuse = True
-                    page.views[0].controls.append(debugsiliconnoti[0])
-                    page.views[0].update()
+                    page.views[1].controls.append(debugsiliconnoti[0])
+                    page.views[1].update()
                     debugsiliconnoti[2](None)
-                    time.sleep(0.001)
+                    time.sleep(1)
                     debugsiliconnoti[3](None)
                     time.sleep(1)
-                    page.views[0].controls.pop()
+                    page.views[1].controls.pop()
                     debugsiliconnotiinuse = False
                 else:
                     print("[debug/noti] notification currently in use; will not continue until finished")
@@ -183,7 +183,12 @@ def main(page: ft.Page):
                     "/debug", [
                         ft.AppBar(title=ft.Text("CommandIncremental | Debug Utilities")),
                         ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]),
-                        ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="gives you basically infinite silicon (for debugging purposes + saving *will* be disabled)")
+                        ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="gives you basically infinite silicon (for debugging purposes + saving *will* be disabled)"),
+                        ft.Text("Changelog:", style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+                        ft.Text("1.2.7 | Added changelog to track stuff"),
+                        ft.Text("1.2.7.1 | Minor spelling mistake *earth collapsing*"),
+                        ft.Text("1.2.7.2 | Fixed debug silicon notification not showing"),
+                        ft.Text("1.2.7.3 | Ok, the notification is slow, but it works alright?")
                     ]
                 )
             )
@@ -202,7 +207,7 @@ def main(page: ft.Page):
     while True:
         # global buymax
         starttime = time.time()
-        siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 secs"
+        siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
         buygen1button.text = "Buy Basic Silicon Factory ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
