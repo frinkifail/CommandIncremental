@@ -148,6 +148,11 @@ def main(page: ft.Page):
             print("[main/upgrades] bank size upgraded")
         else:
             print("[main/upgrades] not enough silicon!")
+    def handleDarkThemeChange(e):
+        if darktheme.value:
+            page.theme_mode = ft.ThemeMode.DARK
+        else:
+            page.theme_mode = ft.ThemeMode.LIGHT
         # page.views[1].update() # no idea how to make this work lmfao # faulty line 😡
     fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(f"Buy Max: {buymax}", on_click=handleBuyMax, tooltip="buy factories until you're outta silicons")
@@ -162,6 +167,9 @@ def main(page: ft.Page):
     debugsiliconnoti = ftn.createNoti(None, "Debug", "Changed silicon amount!")
     notatecheckbox = ft.Checkbox(label="Scientific Notation")
     notatecheckbox.value = True
+    darktheme = ft.Checkbox(label="Dark Theme")
+    darktheme.value = True
+    darktheme.on_change = handleDarkThemeChange
     upgrades_max = ft.ElevatedButton(f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
     # notatecheckbox.value
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
@@ -201,7 +209,8 @@ def main(page: ft.Page):
                             ft.ElevatedButton("Load", on_click=handleNewLoad, tooltip="loads the game according to your save id"),
                             savefiletf
                         ]),
-                        notatecheckbox
+                        notatecheckbox,
+                        darktheme
                         # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)"
                     ]
                 )
