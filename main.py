@@ -17,9 +17,10 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.2.7.5" # forgor to bump version
+version: str = "1.2.8" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
+notate = True
 
 def main(page: ft.Page):
     global buymax
@@ -124,6 +125,9 @@ def main(page: ft.Page):
     updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval, width=200, tooltip="sets your update interval (doesn't make you generate silicon faster ._.)")
     overflowwarn = ftn.createNoti(None, "Warning!", "Silicons are overflowing! Update thread has stopped!")
     debugsiliconnoti = ftn.createNoti(None, "Debug", "Changed silicon amount!")
+    notatecheckbox = ft.Checkbox(label="Scientific Notation")
+    notatecheckbox.value = True
+    # notatecheckbox.value
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
     # page.add(ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
     
@@ -160,7 +164,8 @@ def main(page: ft.Page):
                             ft.ElevatedButton("Save", on_click=handleSave, tooltip="saves the game according to your save id"),
                             ft.ElevatedButton("Load", on_click=handleLoad, tooltip="loads the game according to your save id"),
                             savefiletf
-                        ])
+                        ]),
+                        notatecheckbox
                         # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)"
                     ]
                 )
@@ -190,7 +195,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.7.2 | Fixed debug silicon notification not showing"),
                         ft.Text("1.2.7.3 | Ok, the notification is slow, but it works alright?"),
                         ft.Text("1.2.7.4 | Forgot to make the buymax buy the upgrade :skull:"),
-                        ft.Text("1.2.7.5 | ong it crashes; i fixed it")
+                        ft.Text("1.2.7.5 | ong it crashes; i fixed it"),
+                        ft.Text("1.2.8 | Made scientific notation optional")
                     ]
                 )
             )
@@ -208,9 +214,18 @@ def main(page: ft.Page):
         
     while True:
         # global buymax
-        starttime = time.time()
-        siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
-        buygen1button.text = "Buy Basic Silicon Factory ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
+        # starttime = time.time()
+        if notatecheckbox.value:
+            notate = True
+        else:
+            notate = False
+        if notate:
+            siliconcounter.value = "{:e} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
+            buygen1button.text = "Buy Basic Silicon Factory ("+"{:e}".format(gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
+        else:
+            siliconcounter.value = "{} silicon | ".format(silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
+            buygen1button.text = "Buy Basic Silicon Factory ("+"{}".format(gen1['amount'])+") | Cost: {}$".format(gen1['cost'])
+        
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
         time.sleep(updateinterval) # make the game capped at 12 fps (0.083333333333333328707 sec) # nvm its changable # also the default value is now 0.0025
