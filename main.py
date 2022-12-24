@@ -1,3 +1,4 @@
+from replit import db
 import flet as ft
 from threading import Thread
 import time
@@ -18,7 +19,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.3" # forgor to bump version
+version: str = "1.4" # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -46,7 +47,27 @@ def main(page: ft.Page):
             print("[gen/1] bought!")
         else:
             print("[gen/1] not enough silicon")
-        
+
+    def handleNewSave(e):
+        if saveenabled:
+            db["silicon"] = silicon
+            db["siliconperspec"] = siliconperspec
+            db["gen1"] = gen1
+            db["maxsilicon"] = {"max":maxsilicon, "cost":maxsiliconcost}
+            print('[save/new] saved!')
+        else:
+            print('[save/new] cannot save: disabled')
+    def handleNewLoad(e):
+        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost
+        if saveenabled:
+            silicon = db["silicon"]
+            siliconperspec = db["siliconperspec"]
+            gen1 = db["gen1"]
+            maxsilicon = db["maxsilicon"]["max"]
+            maxsiliconcost = db["maxsilicon"]["cost"]
+            print('[save/new] loaded!')
+        else:
+            print('[save/new] cannot load: disabled')
     def handleSave(e):
         if saveenabled:
             try:
@@ -176,8 +197,8 @@ def main(page: ft.Page):
                         ft.AppBar(title=ft.Text("CommandIncremental | Settings")),
                         updateintervaltf,
                         ft.Row([
-                            ft.ElevatedButton("Save", on_click=handleSave, tooltip="saves the game according to your save id"),
-                            ft.ElevatedButton("Load", on_click=handleLoad, tooltip="loads the game according to your save id"),
+                            ft.ElevatedButton("Save", on_click=handleNewSave, tooltip="saves the game according to your save id"),
+                            ft.ElevatedButton("Load", on_click=handleNewLoad, tooltip="loads the game according to your save id"),
                             savefiletf
                         ]),
                         notatecheckbox
@@ -213,7 +234,8 @@ def main(page: ft.Page):
                         ft.Text("1.2.7.5 | ong it crashes; i fixed it"),
                         ft.Text("1.2.8 | Made scientific notation optional"),
                         ft.Text("1.2.9 | Upgrade Max actually works now"),
-                        ft.Text("1.3 | Saving overhaul")
+                        ft.Text("1.3 | Saving overhaul"),
+                        ft.Text("1.4 | Saving overhaul.... again...")
                     ]
                 )
             )
