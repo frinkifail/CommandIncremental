@@ -1,7 +1,7 @@
 try:
     from replit import db
 except ImportError:
-    print("[debug/libraries] unable to import database from replit, assuming desktop mode")
+    print("[debug/libraries] unable to import database from replit, assuming running custom server")
 import flet as ft
 from threading import Thread
 import time
@@ -240,6 +240,7 @@ def main(page: ft.Page):
                     ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(
                         ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities")]),
                     # used to be window drag area,
+                    # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, buygen1button,
                     buymaxbtn,
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
@@ -395,4 +396,4 @@ def update():
 if __name__ == "__main__":
     updateThread = Thread(target=update)
     updateThread.start()
-    ft.app(target=main, port=8000)
+    ft.app(target=main, port=8000, view=ft.WEB_BROWSER)
