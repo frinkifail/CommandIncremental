@@ -22,7 +22,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.4.4"  # forgor to bump version
+version: str = "1.4.5"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -272,7 +272,7 @@ def main(page: ft.Page):
                         ]),
                         notatecheckbox,
                         darktheme,
-                        legacymode
+                        # legacymode
                         # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)" # i moved it
                     ]
                 )
@@ -324,7 +324,8 @@ def main(page: ft.Page):
                             "1.4.3 | Remove Window Drag Area cus this is turning into a browser game"),
                         ft.Text(
                             "1.4.3.1 | I forgot to remove the quit button too"),
-                        ft.Text("1.4.4 | Idk idk how to make desktop mode or something")
+                        ft.Text("1.4.4 | Idk idk how to make desktop mode or something"),
+                        ft.Text("1.4.5 | Made scientific notation disabled by default")
                     ]
                 )
             )
