@@ -213,7 +213,7 @@ def main(page: ft.Page):
         None, "Warning!", "Silicons are overflowing! Update thread has stopped!")
     debugsiliconnoti = ftn.createNoti(None, "Debug", "Changed silicon amount!")
     notatecheckbox = ft.Checkbox(label="Scientific Notation")
-    notatecheckbox.value = True
+    # notatecheckbox.value = True
     darktheme = ft.Checkbox(label="Dark Theme")
     darktheme.value = True
     darktheme.on_change = handleDarkThemeChange
