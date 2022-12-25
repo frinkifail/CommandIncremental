@@ -14,6 +14,8 @@ silicon: float = 0
 siliconperspec: float = 0.108
 maxsilicon: float = 100
 maxsiliconcost = 75
+siliconmultiplier: float = 1
+siliconmultipliercost = 165
 gen1 = {
     "cost": 10,
     "growth": 1.28,
@@ -22,12 +24,12 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.4.5"  # forgor to bump version
+version: str = "1.4.6"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
 legacymodebool = False
-
+silicongenwaittime = 0.1
 
 def main(page: ft.Page):
     global buymax
@@ -171,6 +173,17 @@ def main(page: ft.Page):
             print("[main/upgrades] bank size upgraded")
         else:
             print("[main/upgrades] not enough silicon!")
+            
+    def handleUpgradeMultiplier(e):
+        global silicon, siliconmultipliercost, siliconmultiplier
+        if silicon >= siliconmultipliercost:
+            silicon -= siliconmultipliercost
+            siliconmultipliercost *= 1.69
+            siliconmultiplier += 1.5
+            upgrades_siliconmultiplier.text = f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]"
+            print("[main/upgrades] multiplier upgraded")
+        else:
+            print("[main/upgrades] not enough silicon!")
 
     def handleDarkThemeChange(e):
         if darktheme.value:
@@ -219,6 +232,7 @@ def main(page: ft.Page):
     darktheme.on_change = handleDarkThemeChange
     upgrades_max = ft.ElevatedButton(
         f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
+    upgrades_siliconmultiplier = ft.ElevatedButton(f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]", on_click=handleUpgradeMultiplier, tooltip=f"Gain more silicon per {silicongenwaittime} seconds")
     legacymode = ft.Checkbox(label="Desktop Mode", on_change=handleLegacyMode)
     windowdragarea = ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"),
                                        padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window")
@@ -285,7 +299,9 @@ def main(page: ft.Page):
                             "CommandIncremental | Upgrades")),
                         ft.Column([
                             ft.Divider(height=3, thickness=3),
-                            upgrades_max
+                            upgrades_max,
+                            ft.Divider(height=3, thickness=3),
+                            upgrades_siliconmultiplier
                         ])
                     ]
                 )
@@ -325,7 +341,8 @@ def main(page: ft.Page):
                         ft.Text(
                             "1.4.3.1 | I forgot to remove the quit button too"),
                         ft.Text("1.4.4 | Idk idk how to make desktop mode or something"),
-                        ft.Text("1.4.5 | Made scientific notation disabled by default")
+                        ft.Text("1.4.5 | Made scientific notation disabled by default"),
+                        ft.Text("1.4.6 | Made new upgrade + i didnt forgor buymax this time")
                     ]
                 )
             )
@@ -350,12 +367,12 @@ def main(page: ft.Page):
             notate = False
         if notate:
             siliconcounter.value = "{:e} silicon | ".format(
-                silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
+                silicon)+str("{:.3f}".format(siliconperspec))+f" silicon per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic Silicon Factory ("+"{:e}".format(
                 gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
         else:
             siliconcounter.value = "{} silicon | ".format(
-                silicon)+str("{:.3f}".format(siliconperspec))+" silicon per 0.1 sec"
+                silicon)+str("{:.3f}".format(siliconperspec))+f" silicon per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic Silicon Factory ("+"{}".format(
                 gen1['amount'])+") | Cost: {}$".format(gen1['cost'])
 
@@ -366,6 +383,7 @@ def main(page: ft.Page):
         if buymax is True:
             buygen1(None)
             handleUpgradeMax(None)
+            handleUpgradeMultiplier(None)
         if silicon > 1e+308:
             page.views[0].controls.append(overflowwarn[0])
             page.views[0].update()
@@ -385,7 +403,7 @@ def update():
         global silicon
         if not silicon > 1e+308:
             if not silicon >= maxsilicon:
-                silicon += siliconperspec
+                silicon += siliconperspec*siliconmultiplier
             else:
                 print("[main/silicon] cannot continue, silicon reached max")
         else:
