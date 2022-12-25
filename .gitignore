@@ -3,6 +3,9 @@ replit.nix
 venv
 poetry.lock
 pyproject.toml
-save.json
+# save.json
 saves
 __pycache__
+build
+dist
+*.spec
