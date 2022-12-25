@@ -272,7 +272,7 @@ def main(page: ft.Page):
                         notatecheckbox,
                         darktheme,
                         legacymode
-                        # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)"
+                        # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)" # i moved it
                     ]
                 )
             )
