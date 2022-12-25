@@ -10,12 +10,12 @@ import json
 import notificationFlet as ftn
 import os
 
-silicon: float = 0
+silicon: float = 10
 siliconperspec: float = 0.108
-maxsilicon: float = 100
-maxsiliconcost = 75
+maxsilicon: float = 15
+maxsiliconcost = 10
 siliconmultiplier: float = 1
-siliconmultipliercost = 165
+siliconmultipliercost = 365
 gen1 = {
     "cost": 10,
     "growth": 1.28,
@@ -24,12 +24,13 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.4.6"  # forgor to bump version
+version: str = "1.5"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
 legacymodebool = False
-silicongenwaittime = 0.1
+silicongenwaittime = 0.8
+silicongenwaittimecost = 550
 
 def main(page: ft.Page):
     global buymax
@@ -62,18 +63,26 @@ def main(page: ft.Page):
             db["siliconperspec"] = siliconperspec
             db["gen1"] = gen1
             db["maxsilicon"] = {"max": maxsilicon, "cost": maxsiliconcost}
+            db["silicongwt"] = silicongenwaittime
+            db["silicongwt_c"] = silicongenwaittimecost
+            db["siliconmul"] = siliconmultiplier
+            db["siliconmul_c"] = siliconmultipliercost
             print('[save/new] saved!')
         else:
             print('[save/new] cannot save: disabled')
 
     def handleNewLoad(e):
-        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost
+        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost, silicongenwaittime, silicongenwaittimecost, siliconmultiplier, siliconmultipliercost
         if saveenabled:
             silicon = db["silicon"]
             siliconperspec = db["siliconperspec"]
             gen1 = db["gen1"]
             maxsilicon = db["maxsilicon"]["max"]
             maxsiliconcost = db["maxsilicon"]["cost"]
+            silicongenwaittime = db["silicongwt"]
+            silicongenwaittimecost = db["silicongwt_c"]
+            siliconmultiplier = db["siliconmul"]
+            siliconmultipliercost = db["siliconmul_c"]
             print('[save/new] loaded!')
         else:
             print('[save/new] cannot load: disabled')
@@ -181,9 +190,24 @@ def main(page: ft.Page):
             siliconmultipliercost *= 1.69
             siliconmultiplier += 1.5
             upgrades_siliconmultiplier.text = f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]"
+            upgrades_siliconmultiplier.tooltip = f"Gain more silicon per {silicongenwaittime} seconds"
             print("[main/upgrades] multiplier upgraded")
         else:
             print("[main/upgrades] not enough silicon!")
+        
+    def handleUpgradeGenWaitTime(e):
+        global silicon, silicongenwaittime, silicongenwaittimecost
+        if silicongenwaittime > 0.02:
+            if silicon >= silicongenwaittimecost:
+                silicon -= silicongenwaittimecost
+                silicongenwaittimecost *= 1.80
+                silicongenwaittime -= 0.01
+                upgrades_waittime.text = f"Generation Time [{silicongenwaittime}] | Cost: [{silicongenwaittimecost}]"
+                print("[main/upgrades] generation time upgraded")
+            else:
+                print("[main/upgrades] not enough silicon!")
+        else:
+            print("[main/upgrades] upgrade gen wait time reached max")
 
     def handleDarkThemeChange(e):
         if darktheme.value:
@@ -206,6 +230,11 @@ def main(page: ft.Page):
             page.views[0].controls.remove(windowdragarea)
             page.views[0].update()
             legacymodebool = False
+        
+    def handleManualBoost(e):
+        global silicon, siliconmultiplier, siliconperspec
+        silicon += siliconperspec*siliconmultiplier        
+    
     # page.views[1].update() # no idea how to make this work lmfao # faulty line 😡 # old line, ignore pls
     fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(
@@ -230,9 +259,25 @@ def main(page: ft.Page):
     darktheme = ft.Checkbox(label="Dark Theme")
     darktheme.value = True
     darktheme.on_change = handleDarkThemeChange
+    ############################################ UPGRADES
     upgrades_max = ft.ElevatedButton(
-        f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]", on_click=handleUpgradeMax, tooltip="Upgrade bank size")
-    upgrades_siliconmultiplier = ft.ElevatedButton(f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]", on_click=handleUpgradeMultiplier, tooltip=f"Gain more silicon per {silicongenwaittime} seconds")
+        f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]",
+        on_click=handleUpgradeMax, tooltip="Upgrade bank size"
+    )
+    upgrades_siliconmultiplier = ft.ElevatedButton(
+        f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]",
+        on_click=handleUpgradeMultiplier,
+        tooltip=f"Gain more silicon per {silicongenwaittime} seconds"
+    )
+    upgrades_waittime = ft.ElevatedButton(
+        f"Generation Time [{silicongenwaittime}] | Cost: [{silicongenwaittimecost}]",
+        on_click=handleUpgradeGenWaitTime,
+        tooltip="Wait shorter time to generate silicon"
+    )
+    ############################################ END UPGRADE
+    ############################################ GAME UTILS
+    manualboost = ft.FloatingActionButton(icon=ft.icons.ADD, on_click=handleManualBoost)
+    ############################################ END GAME UTILS
     legacymode = ft.Checkbox(label="Desktop Mode", on_change=handleLegacyMode)
     windowdragarea = ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"),
                                        padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window")
@@ -257,6 +302,7 @@ def main(page: ft.Page):
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, buygen1button,
                     buymaxbtn,
+                    manualboost
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
 
                 ]
@@ -301,7 +347,9 @@ def main(page: ft.Page):
                             ft.Divider(height=3, thickness=3),
                             upgrades_max,
                             ft.Divider(height=3, thickness=3),
-                            upgrades_siliconmultiplier
+                            upgrades_siliconmultiplier,
+                            ft.Divider(height=3, thickness=3),
+                            upgrades_waittime
                         ])
                     ]
                 )
@@ -342,7 +390,8 @@ def main(page: ft.Page):
                             "1.4.3.1 | I forgot to remove the quit button too"),
                         ft.Text("1.4.4 | Idk idk how to make desktop mode or something"),
                         ft.Text("1.4.5 | Made scientific notation disabled by default"),
-                        ft.Text("1.4.6 | Made new upgrade + i didnt forgor buymax this time")
+                        ft.Text("1.4.6 | Made new upgrade + i didnt forgor buymax this time"),
+                        ft.Text("1.5 | New upgrade, saves more data, includes buy max handle for new upgrade, and more things i forgot!")
                     ]
                 )
             )
@@ -384,6 +433,7 @@ def main(page: ft.Page):
             buygen1(None)
             handleUpgradeMax(None)
             handleUpgradeMultiplier(None)
+            handleUpgradeGenWaitTime(None)
         if silicon > 1e+308:
             page.views[0].controls.append(overflowwarn[0])
             page.views[0].update()
@@ -409,7 +459,7 @@ def update():
         else:
             print("[debug] invalid silicon value, exiting...")
             quit()
-        time.sleep(0.1)
+        time.sleep(silicongenwaittime)
 
 
 if __name__ == "__main__":
