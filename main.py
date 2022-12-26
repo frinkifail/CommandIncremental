@@ -1,7 +1,8 @@
+print("[ParentThread/Main => Parent] Server Started!")
 try:
     from replit import db
 except ImportError:
-    print("[debug/libraries] unable to import database from replit, assuming running custom server")
+    print("[ParentThread => Imports] unable to import database from replit, assuming running custom server")
 import flet as ft
 from threading import Thread
 import time
@@ -53,9 +54,9 @@ def main(page: ft.Page):
             gen1["cost"] *= gen1["growth"]
             gen1["amount"] += 1
             siliconperspec += 0.18
-            print("[gen/1] bought!")
+            print("[MainThread/Generators => 1] bought!")
         else:
-            print("[gen/1] not enough silicon")
+            print("[MainThread/Generators => 1] not enough silicon")
 
     def handleNewSave(e):
         if saveenabled:
@@ -67,9 +68,9 @@ def main(page: ft.Page):
             db["silicongwt_c"] = silicongenwaittimecost
             db["siliconmul"] = siliconmultiplier
             db["siliconmul_c"] = siliconmultipliercost
-            print('[save/new] saved!')
+            print('[MainThread/Handler => Save] Statistics Saved!')
         else:
-            print('[save/new] cannot save: disabled')
+            print('[MainThread/Handler => Save] Failed to save: Saving/Loading is disabled')
 
     def handleNewLoad(e):
         global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost, silicongenwaittime, silicongenwaittimecost, siliconmultiplier, siliconmultipliercost
@@ -83,9 +84,9 @@ def main(page: ft.Page):
             silicongenwaittimecost = db["silicongwt_c"]
             siliconmultiplier = db["siliconmul"]
             siliconmultipliercost = db["siliconmul_c"]
-            print('[save/new] loaded!')
+            print('[MainThread/Handler => Load] Statistics Loaded!')
         else:
-            print('[save/new] cannot load: disabled')
+            print('[MainThread/Handler => Load] Failed to load: Saving/Loading is disabled')
 
     def handleSave(e):
         if saveenabled:
@@ -140,15 +141,13 @@ def main(page: ft.Page):
                     page.views[1].controls.pop()
                     debugsiliconnotiinuse = False
                 else:
-                    print(
-                        "[debug/noti] notification currently in use; will not continue until finished")
+                    print("[MainThread/Debug => Notifications] Notification Animation is playing, won't play overlapping animation")
             else:
-                print(
-                    "[debug] will not set silicon; debug silicon text field is invalid")
+                print("[MainThread/Debug => SetSilicon] Set Silicon Text Field's value is invalid, won't set to that...")
             saveenabled = False
-            print("[save/debug] save has been disabled due to enabling debug mode!")
+            print("[MainThread/Handler => SaveHandle] Disabled saving, debug silicon handle is called")
         except Exception:  # ugh it doesn't catch because threads fucking suck
-            print("[debug/noti] wow, thats funny, see, the user switched views before i could remove the notification, in conclusion, fuck you")
+            print("[MainThread/Debug => Notification] wow, thats funny, see, the user switched views before i could remove the notification, in conclusion, fuck you")
 
     def handleBuyMax(e):
         global buymax
@@ -169,7 +168,7 @@ def main(page: ft.Page):
     def handleUpdateInterval(e):
         global updateinterval
         updateinterval = float(updateintervaltf.value)
-        print("[debug/updateinterval] successfully updated update interval!")
+        print("[MainThread/Handler => Updater] Changed update interval!")
 
     def handleUpgradeMax(e):
         global maxsilicon, maxsiliconcost, silicon
@@ -179,9 +178,9 @@ def main(page: ft.Page):
             maxsilicon *= 1.38
             # ahhhh im so stupid
             upgrades_max.text = f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]"
-            print("[main/upgrades] bank size upgraded")
+            print("[MainThread/Upgrades => MaxSilicon] Upgraded this upgrade!")
         else:
-            print("[main/upgrades] not enough silicon!")
+            print("[MainThread/Upgrades => MaxSilicon] Not enough silicon to upgrade this!")
             
     def handleUpgradeMultiplier(e):
         global silicon, siliconmultipliercost, siliconmultiplier
@@ -191,9 +190,9 @@ def main(page: ft.Page):
             siliconmultiplier += 1.5
             upgrades_siliconmultiplier.text = f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]"
             upgrades_siliconmultiplier.tooltip = f"Gain more silicon per {silicongenwaittime} seconds"
-            print("[main/upgrades] multiplier upgraded")
+            print("[MainThread/Upgrades => Multiplier] Upgraded this upgrade!")
         else:
-            print("[main/upgrades] not enough silicon!")
+            print("[MainThread/Upgrades => Multiplier] Not enough silicon to upgrade this!")
         
     def handleUpgradeGenWaitTime(e):
         global silicon, silicongenwaittime, silicongenwaittimecost
@@ -203,11 +202,11 @@ def main(page: ft.Page):
                 silicongenwaittimecost *= 1.80
                 silicongenwaittime -= 0.01
                 upgrades_waittime.text = f"Generation Time [{silicongenwaittime}] | Cost: [{silicongenwaittimecost}]"
-                print("[main/upgrades] generation time upgraded")
+                print("[MainThread/Upgrades => WaitTime] Upgraded this upgrade!")
             else:
-                print("[main/upgrades] not enough silicon!")
+                print("[MainThread/Upgrades => WaitTime] Not enough silicon to upgrade this!")
         else:
-            print("[main/upgrades] upgrade gen wait time reached max")
+            print("[MainThread/Upgrades => WaitTime] Reached Max Upgrade!")
 
     def handleDarkThemeChange(e):
         if darktheme.value:
@@ -455,9 +454,9 @@ def update():
             if not silicon >= maxsilicon:
                 silicon += siliconperspec*siliconmultiplier
             else:
-                print("[main/silicon] cannot continue, silicon reached max")
+                print("[UpdateThread/Update] Cannot Add Silicon, Reached Maximum Bank Capacity")
         else:
-            print("[debug] invalid silicon value, exiting...")
+            print("[UpdateThread/Update => InvalidChecker] Silicon value is infinite, either you cheated, or you beat the game")
             quit()
         time.sleep(silicongenwaittime)
 
