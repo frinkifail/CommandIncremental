@@ -25,7 +25,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.5"  # forgor to bump version
+version: str = "1.5.1"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -390,7 +390,8 @@ def main(page: ft.Page):
                         ft.Text("1.4.4 | Idk idk how to make desktop mode or something"),
                         ft.Text("1.4.5 | Made scientific notation disabled by default"),
                         ft.Text("1.4.6 | Made new upgrade + i didnt forgor buymax this time"),
-                        ft.Text("1.5 | New upgrade, saves more data, includes buy max handle for new upgrade, and more things i forgot!")
+                        ft.Text("1.5 | New upgrade, saves more data, includes buy max handle for new upgrade, and more things i forgot!"),
+                        ft.Text("1.5.1 | Updated debug messages")
                     ]
                 )
             )
