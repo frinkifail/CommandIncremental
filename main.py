@@ -5,6 +5,7 @@ import json
 import time
 from threading import Thread
 import flet as ft
+import math
 print("[ParentThread/Main => Parent] Server Started!")
 try:
     from replit import db
@@ -32,7 +33,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.5.3"  # forgor to bump version
+version: str = "1.6"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -94,6 +95,19 @@ def main(page: ft.Page):
     page.window_maximizable = False
     page.window_width = 800
     page.window_height = 600
+    page.tooltip = ft.Tooltip(gradient=ft.LinearGradient(
+                begin=ft.alignment.top_left,
+                end=ft.alignment.Alignment(0.8, 1),
+                colors=[
+                    "0xff1f005c",
+                    "0xff5b0060",
+                    "0xff870160",
+                    "0xffac255e",
+                    "0xffca485c",
+                    "0xffe16b5c",
+                    "0xfff39060",
+                    "0xffffb56b",
+                ]))
     # Other Variables
     # debugsiliconnotiinuse = False
     # fuckerinas it doesn't work!
@@ -524,7 +538,8 @@ def main(page: ft.Page):
                             "1.5 | New upgrade, saves more data, includes buy max handle for new upgrade, and more things i forgot!"),
                         ft.Text("1.5.1 | Updated debug messages"),
                         ft.Text("1.5.2 | Added console that almost worked"),
-                        ft.Text("1.5.3 | Added console inside the app")
+                        ft.Text("1.5.3 | Added console inside the app"),
+                        ft.Text("1.6 | Kinda plugin support or smth idk")
                     ]
                 )
             )
@@ -664,4 +679,4 @@ if __name__ == "__main__":
     # consoleThread.start()
     # appThread = Thread(target=lambda: ft.app(target=main, port=8000, view=ft.WEB_BROWSER))
     # appThread.start()
-    ft.app(target=main, port=8000, view=ft.WEB_BROWSER)
+    ft.app(target=main, port=8000, view=ft.WEB_BROWSER, route_url_strategy="path")
