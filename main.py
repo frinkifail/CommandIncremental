@@ -33,7 +33,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.6"  # forgor to bump version
+version: str = "1.6.1"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -62,7 +62,7 @@ def addToPage(content):
     global pluginwantstoaddpage_content, pluginwantstoaddpage
     pluginwantstoaddpage = True
     pluginwantstoaddpage_content = content
-    print(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!")
+    print(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!") # nooooooooooo idk how to make thissss
 
 def loadPlugins():
     # global pluginscriptfiles
@@ -561,7 +561,8 @@ def main(page: ft.Page):
                         ft.Text("1.5.1 | Updated debug messages"),
                         ft.Text("1.5.2 | Added console that almost worked"),
                         ft.Text("1.5.3 | Added console inside the app"),
-                        ft.Text("1.6 | Kinda plugin support or smth idk")
+                        ft.Text("1.6 | Kinda plugin support or smth idk"),
+                        ft.Text("1.6.1 | Metadata support + bug fixes (you couldn't load multiple plugins)")
                     ]
                 )
             )
