@@ -46,6 +46,10 @@ console_lastcmd = ""
 pluginscriptfiles = []
 pluginwantstoaddpage = False
 pluginwantstoaddpage_content = None
+plugins = []
+pluginnames = []
+plugindescs = []
+pluginvers = []
 
 def setSilicon(count: float):
     global silicon
@@ -71,6 +75,7 @@ def loadPlugins():
             displaysiliconunit2 = bindings.displayunit2
             # pluginThread = Thread(target=)
     os.chdir("./plugins")
+    global plugins
     plugins = os.listdir(".")
     # plugins = oldplugins.remove("API")
     plugins.remove("API")
@@ -78,13 +83,30 @@ def loadPlugins():
     # print(["Hi", "API"].remove("API"))
     print("[ParentThread/PluginLoader => PluginChecker] Available plugins: "+str(plugins))
     for i in range(plugins.__len__()):
-        os.chdir(plugins[i])
-        if os.path.exists("scripts"):
-            global pluginscriptfiles
-            os.chdir("scripts")
-            # pluginscriptfiles = []
-            pluginscriptfiles = os.listdir(".")
-            executePlugins()
+        try:
+            os.chdir(plugins[i])
+        except:
+            os.chdir("..")
+            os.chdir(plugins[i])
+        metadata = open("./meta.json")
+        parsed_metadata = json.load(metadata)
+        if parsed_metadata["enabled"]:
+            if os.path.exists("meta.json"):
+                pluginnames.append(parsed_metadata["name"])
+                plugindescs.append(parsed_metadata["desc"])
+                pluginvers.append(parsed_metadata["version"])
+                if parsed_metadata["enabled"]:
+                    if os.path.exists("scripts"):
+                        global pluginscriptfiles
+                        os.chdir("scripts")
+                        # pluginscriptfiles = []
+                        pluginscriptfiles = os.listdir(".")
+                        executePlugins()
+                    else:
+                        print("[ParentThread/PluginLoader => ScriptChecker] No scripts available, loading only metadata")
+        else:
+            print("[ParentThread/PluginLoader => MetaChecker] Plugin disabled in meta, not counting")
+        os.chdir("..")
 
 def main(page: ft.Page):
     global buymax
@@ -437,7 +459,7 @@ def main(page: ft.Page):
             ft.View(
                 "/", [
                     ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(
-                        ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"), tooltip="In-app Console")]),
+                        ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"), tooltip="In-app Console"), ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"), tooltip="Installed Plugins")]),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, buygen1button,
@@ -548,6 +570,22 @@ def main(page: ft.Page):
                 "/console", [
                     ft.AppBar(title=ft.Text("CommandIncremental | Console")),
                     ft.Row([consoleTextBox, ft.IconButton(ft.icons.START, on_click=handleConsoleCommand)])
+                ]
+            ))
+        elif page.route == "/plugins":
+            global plugins, pluginvers, pluginnames, plugindescs
+            plugincol = ft.Column()
+            for i in range(pluginnames.__len__()):
+                plugincol.controls.append(
+                    ft.Text(pluginnames[i],style=ft.TextThemeStyle.HEADLINE_MEDIUM))
+                plugincol.controls.append(ft.Text(plugindescs[i], style=ft.TextThemeStyle.BODY_MEDIUM))
+                plugincol.controls.append(ft.Text(pluginvers[i], style=ft.TextThemeStyle.LABEL_SMALL))
+                plugincol.controls.append(ft.Divider(height=3,thickness=3))
+            
+            page.views.append(ft.View(
+                "/plugins", [
+                    ft.AppBar(title=ft.Text("CommandIncremental | Installed/Loaded Plugins")),
+                    plugincol
                 ]
             ))
         page.update()
