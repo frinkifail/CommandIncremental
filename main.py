@@ -1,4 +1,5 @@
 import os
+import sys
 import notificationFlet as ftn
 import json
 import time
@@ -11,12 +12,18 @@ except ImportError:
     print("[ParentThread => Imports] unable to import database from replit, assuming running custom server")
 # import math
 
+sys.path.append("plugins/API")
+import bindings
+from typing import *
+
 silicon: float = 10
 siliconperspec: float = 0.108
 maxsilicon: float = 15
 maxsiliconcost = 10
 siliconmultiplier: float = 1
 siliconmultipliercost = 365
+displaysiliconunit = bindings.displayunit
+displaysiliconunit2 = bindings.displayunit2
 gen1 = {
     "cost": 10,
     "growth": 1.28,
@@ -34,6 +41,49 @@ silicongenwaittime = 0.8
 silicongenwaittimecost = 550
 consolepage = "main"
 console_setsiliconval = None
+console_lastcmd = ""
+pluginscriptfiles = []
+pluginwantstoaddpage = False
+pluginwantstoaddpage_content = None
+
+def setSilicon(count: float):
+    global silicon
+    print(f"[ParentThread/PluginHelper => SetSilicon] Old Silicon Count: {silicon}")
+    silicon = count
+    print("[ParentThread/PluginHelper => SetSilicon] Set silicon done!")
+    print(f"[ParentThread/PluginHelper => SetSilicon] New Silicon Count: {silicon}")
+    
+def addToPage(content):
+    global pluginwantstoaddpage_content, pluginwantstoaddpage
+    pluginwantstoaddpage = True
+    pluginwantstoaddpage_content = content
+    print(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!")
+
+def loadPlugins():
+    # global pluginscriptfiles
+    def executePlugins():
+        global displaysiliconunit2, displaysiliconunit
+        for i in range(pluginscriptfiles.__len__()):
+            exec(open(pluginscriptfiles[i], 'r').read())
+            # print(bindings.displayunit)
+            displaysiliconunit = bindings.displayunit
+            displaysiliconunit2 = bindings.displayunit2
+            # pluginThread = Thread(target=)
+    os.chdir("./plugins")
+    plugins = os.listdir(".")
+    # plugins = oldplugins.remove("API")
+    plugins.remove("API")
+    scriptfiles = []
+    # print(["Hi", "API"].remove("API"))
+    print("[ParentThread/PluginLoader => PluginChecker] Available plugins: "+str(plugins))
+    for i in range(plugins.__len__()):
+        os.chdir(plugins[i])
+        if os.path.exists("scripts"):
+            global pluginscriptfiles
+            os.chdir("scripts")
+            # pluginscriptfiles = []
+            pluginscriptfiles = os.listdir(".")
+            executePlugins()
 
 def main(page: ft.Page):
     global buymax
@@ -244,14 +294,34 @@ def main(page: ft.Page):
         global silicon, siliconmultiplier, siliconperspec
         silicon += siliconperspec*siliconmultiplier
         
-    def handleConsoleCommand(e):
-        global silicon
-        ctbv = consoleTextBox.value
-        if ctbv.startswith("set-silicon "):
-            ssv = float(ctbv[11:])
+    def view1add(content):
+        page.views[1].controls.append(content)
+        page.views[1].update()
+        
+    def handleConsoleCommand(e, cmd=None):
+        global silicon, console_lastcmd
+        # if console_lastcmd == "lastcmd":
+            # pass
+            # console_lastcmd = "get-silicon"
+            # ctbv = "get-silicon"
+        # else:
+        if consoleTextBox.value:
+            if not cmd:
+                ctbv = consoleTextBox.value
+            else:
+                ctbv = cmd
+        else:
+            ctbv = "lastcmd"
+        ctbv = ctbv.lower()
+        if ctbv.startswith("set-silicon ") or ctbv.startswith("ss "):
+            try:
+                ssv = float(ctbv[11:])
+            except:
+                ssv = float(ctbv[3:])
             # if isinstance(ssv, float):
             silicon = ssv
             page.views[1].controls.append(ft.Text("[Main/Console => SetSilicon] Done!"))
+            console_lastcmd = ctbv
         elif ctbv == "kill":
             page.views[1].controls.append(ft.Text("[Main/Console => KillWindow] Killing all..."))
             page.views[1].update()
@@ -261,9 +331,32 @@ def main(page: ft.Page):
             else:
                 os.system("killall python3")
                 os.system("pkill python3")
-        elif ctbv == "get-silicon":
+            console_lastcmd = ctbv
+        elif ctbv == "get-silicon" or ctbv == "gs":
             page.views[1].controls.append(ft.Text(f"[Main/Console => GetSilicon] Silicon Count Is: {silicon}"))
             page.views[1].update()
+            console_lastcmd = ctbv
+        elif ctbv == "lastcmd" or ctbv == "" or ctbv == "lc":
+            #
+            # consoleTextBox.value = ""
+            # ctbv = console_lastcmd
+            # ctbv = cmd
+            handleConsoleCommand(None, console_lastcmd) # idk why "" doesn't work :skull:
+        elif ctbv == "test" or ctbv == "t":
+            view1add(ft.Text("Working!"))
+            console_lastcmd = ctbv
+        elif ctbv == "get-displayunit":
+            global displaysiliconunit2, displaysiliconunit
+            view1add(ft.Text(displaysiliconunit))
+            view1add(ft.Text(displaysiliconunit2))
+        # if not consoleTextBox.value:
+            # handleConsoleCommand(None, console_lastcmd)
+            
+
+        # if not console_lastcmd == "lastcmd":
+        # else:
+            # console_lastcmd = "get-silicon"
+        consoleTextBox.value = ""
 
     # page.views[1].update() # no idea how to make this work lmfao # faulty line 😡 # old line, ignore pls
     fpscounter = ft.Text("FPS: [DISABLED]")
@@ -317,7 +410,7 @@ def main(page: ft.Page):
     savebutton = ft.ElevatedButton(
         "Save", on_click=handleNewSave, tooltip="saves the game according to your save id")
 
-    consoleTextBox = ft.TextField(label="Insert Command")
+    consoleTextBox = ft.TextField(label="Insert Command", shift_enter=True, on_submit=handleConsoleCommand)
 
     # notatecheckbox.value
     # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
@@ -330,7 +423,7 @@ def main(page: ft.Page):
             ft.View(
                 "/", [
                     ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(
-                        ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities")]),
+                        ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"), tooltip="In-app Console")]),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, buygen1button,
@@ -438,6 +531,7 @@ def main(page: ft.Page):
         elif page.route == "/console":
             page.views.append(ft.View(
                 "/console", [
+                    ft.AppBar(title=ft.Text("CommandIncremental | Console")),
                     ft.Row([consoleTextBox, ft.IconButton(ft.icons.START, on_click=handleConsoleCommand)])
                 ]
             ))
@@ -453,6 +547,7 @@ def main(page: ft.Page):
     page.on_view_pop = view_pop
     page.go(page.route)
 
+    global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
         # global buymax
         # starttime = time.time()
@@ -461,14 +556,14 @@ def main(page: ft.Page):
         else:
             notate = False
         if notate:
-            siliconcounter.value = "{:e} silicon | ".format(
-                silicon)+str("{:.3f}".format(siliconperspec))+f" silicon per {silicongenwaittime} sec"
-            buygen1button.text = "Buy Basic Silicon Factory ("+"{:e}".format(
-                gen1['amount'])+") | Cost: {:e}$".format(gen1['cost'])
+            siliconcounter.value = "{:e} {0} | ".format(
+                silicon, displaysiliconunit)+str("{:.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
+            buygen1button.text = "Buy Basic {0} Factory ("+"{:e}".format(
+                gen1['amount'], displaysiliconunit2)+") | Cost: {:e}$".format(gen1['cost'])
         else:
-            siliconcounter.value = "{} silicon | ".format(
-                silicon)+str("{:.3f}".format(siliconperspec))+f" silicon per {silicongenwaittime} sec"
-            buygen1button.text = "Buy Basic Silicon Factory ("+"{}".format(
+            siliconcounter.value = "{} {} | ".format(
+                silicon, displaysiliconunit)+str("{:.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
+            buygen1button.text = "Buy Basic {} Factory (".format(displaysiliconunit2)+"{}".format(
                 gen1['amount'])+") | Cost: {}$".format(gen1['cost'])
 
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
@@ -492,6 +587,13 @@ def main(page: ft.Page):
             time.sleep(0.25)
             page.window_close()
             quit()
+        # print(f"[MainThread/PluginHelper => PrintPluginWantsToAddPage] {pluginwantstoaddpage} | {pluginwantstoaddpage_content}")
+        if pluginwantstoaddpage:
+            page.views[0].controls.append(pluginwantstoaddpage_content)
+            page.views[0].update()
+            time.sleep(0.1)
+            pluginwantstoaddpage = False
+            print("[MainThread/PluginHelper => AddContentToPage] Plugin wants to add page!")
 
 
 def update():
@@ -553,6 +655,7 @@ def interactableConsole():
 if __name__ == "__main__":
     updateThread = Thread(target=update)
     updateThread.start()
+    loadPlugins()
     # if os.name == "nt":
     #     os.system("python .\console.py")
     # else:
