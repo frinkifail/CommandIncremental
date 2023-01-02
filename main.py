@@ -25,6 +25,14 @@ siliconmultiplier: float = 1
 siliconmultipliercost = 365
 displaysiliconunit = bindings.displayunit
 displaysiliconunit2 = bindings.displayunit2
+
+money: float = 0
+moneyperspec: float = 0
+maxmoney = 1e307
+moneymultiplier = 1
+displaymoneyunit = bindings.moneydisplayunit
+displaymoneyunit2 = bindings.moneydisplayunit2
+
 gen1 = {
     "cost": 10,
     "growth": 1.28,
@@ -437,6 +445,7 @@ def main(page: ft.Page):
     # GAME UTILS
     manualboost = ft.FloatingActionButton(
         icon=ft.icons.ADD, on_click=handleManualBoost)
+    moneydisplay = ft.Text(tooltip="money display")
     # END GAME UTILS
     legacymode = ft.Checkbox(label="Desktop Mode", on_change=handleLegacyMode)
     windowdragarea = ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"),
@@ -462,7 +471,7 @@ def main(page: ft.Page):
                         ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"), tooltip="In-app Console"), ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"), tooltip="Installed Plugins")]),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
-                    siliconcounter, buygen1button,
+                    siliconcounter, moneydisplay, buygen1button,
                     buymaxbtn,
                     manualboost
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
@@ -611,14 +620,16 @@ def main(page: ft.Page):
             notate = False
         if notate:
             siliconcounter.value = "{:e} {0} | ".format(
-                silicon, displaysiliconunit)+str("{:.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
+                silicon, displaysiliconunit)+str("{:e.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic {0} Factory ("+"{:e}".format(
-                gen1['amount'], displaysiliconunit2)+") | Cost: {:e}$".format(gen1['cost'])
+                gen1['amount'], displaysiliconunit2)+") | Cost: {:e}☼".format(gen1['cost'])
+            moneydisplay.value = "{:e} {0} | ".format(money, displaymoneyunit)+str("{:e.3f}".format(moneyperspec))+f" {displaymoneyunit} per {silicongenwaittime} sec"
         else:
             siliconcounter.value = "{} {} | ".format(
                 silicon, displaysiliconunit)+str("{:.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic {} Factory (".format(displaysiliconunit2)+"{}".format(
-                gen1['amount'])+") | Cost: {}$".format(gen1['cost'])
+                gen1['amount'])+") | Cost: {}☼".format(gen1['cost'])
+            moneydisplay.value = "{0} {1} | ".format(money, displaymoneyunit)+str("{:.3f}".format(moneyperspec))+f" {displaymoneyunit} per {silicongenwaittime} sec"
 
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
