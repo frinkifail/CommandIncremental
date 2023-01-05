@@ -6,6 +6,7 @@ import time
 from threading import Thread
 import flet as ft
 import math
+
 print("[ParentThread/Main => Parent] Server Started!")
 try:
     from replit import db
@@ -59,18 +60,21 @@ pluginnames = []
 plugindescs = []
 pluginvers = []
 
+
 def setSilicon(count: float):
     global silicon
     print(f"[ParentThread/PluginHelper => SetSilicon] Old Silicon Count: {silicon}")
     silicon = count
     print("[ParentThread/PluginHelper => SetSilicon] Set silicon done!")
     print(f"[ParentThread/PluginHelper => SetSilicon] New Silicon Count: {silicon}")
-    
+
+
 def addToPage(content):
     global pluginwantstoaddpage_content, pluginwantstoaddpage
     pluginwantstoaddpage = True
     pluginwantstoaddpage_content = content
-    print(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!") # nooooooooooo idk how to make thissss
+    print(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!")  # nooooooooooo idk how to make thissss
+
 
 def loadPlugins():
     # global pluginscriptfiles
@@ -82,6 +86,7 @@ def loadPlugins():
             displaysiliconunit = bindings.displayunit
             displaysiliconunit2 = bindings.displayunit2
             # pluginThread = Thread(target=)
+
     os.chdir("./plugins")
     global plugins
     plugins = os.listdir(".")
@@ -89,7 +94,7 @@ def loadPlugins():
     plugins.remove("API")
     scriptfiles = []
     # print(["Hi", "API"].remove("API"))
-    print("[ParentThread/PluginLoader => PluginChecker] Available plugins: "+str(plugins))
+    print("[ParentThread/PluginLoader => PluginChecker] Available plugins: " + str(plugins))
     for i in range(plugins.__len__()):
         try:
             os.chdir(plugins[i])
@@ -111,10 +116,12 @@ def loadPlugins():
                         pluginscriptfiles = os.listdir(".")
                         executePlugins()
                     else:
-                        print("[ParentThread/PluginLoader => ScriptChecker] No scripts available, loading only metadata")
+                        print(
+                            "[ParentThread/PluginLoader => ScriptChecker] No scripts available, loading only metadata")
         else:
             print("[ParentThread/PluginLoader => MetaChecker] Plugin disabled in meta, not counting")
         os.chdir("..")
+
 
 def main(page: ft.Page):
     global buymax
@@ -126,18 +133,19 @@ def main(page: ft.Page):
     page.window_width = 800
     page.window_height = 600
     page.tooltip = ft.Tooltip(gradient=ft.LinearGradient(
-                begin=ft.alignment.top_left,
-                end=ft.alignment.Alignment(0.8, 1),
-                colors=[
-                    "0xff1f005c",
-                    "0xff5b0060",
-                    "0xff870160",
-                    "0xffac255e",
-                    "0xffca485c",
-                    "0xffe16b5c",
-                    "0xfff39060",
-                    "0xffffb56b",
-                ]))
+        begin=ft.alignment.top_left,
+        end=ft.alignment.Alignment(0.8, 1),
+        colors=[
+            "0xff1f005c",
+            "0xff5b0060",
+            "0xff870160",
+            "0xffac255e",
+            "0xffca485c",
+            "0xffe16b5c",
+            "0xfff39060",
+            "0xffffb56b",
+        ]))
+
     # Other Variables
     # debugsiliconnotiinuse = False
     # fuckerinas it doesn't work!
@@ -186,41 +194,6 @@ def main(page: ft.Page):
             print(
                 '[MainThread/Handler => Load] Failed to load: Saving/Loading is disabled')
 
-    def handleSave(e):
-        if saveenabled:
-            try:
-                savefile = open("saves/"+savefiletf.value +
-                                "/save.json", mode="r+")
-            except:
-                try:
-                    os.mkdir("saves/"+savefiletf.value)
-                    newsavefile = open(
-                        "saves/"+savefiletf.value+"/save.json", mode='x')
-                    newsavefile.close()
-                    savefile = open("saves/"+savefiletf.value +
-                                    "/save.json", mode="r+")
-                except Exception as e:
-                    print(f"[save] failed to save: {e}")
-            savefile.truncate(0)
-            savefile.write("{\"silicon\": %s, \"siliconperspec\": %s, \"gen1\": {\"cost\": %s, \"amount\": %s}, \"maxsilicon\": %s, \"maxsilicon_cost\": %s}" % (
-                silicon, siliconperspec, gen1["cost"], gen1["amount"], maxsilicon, maxsiliconcost))
-            print("[save] saved!")
-        else:
-            print("[save] failed to save: save is disabled")
-
-    def handleLoad(e):
-        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost
-        if saveenabled:
-            savefile = open("saves/"+savefiletf.value+"/save.json", mode="r+")
-            contents = json.load(savefile)
-            silicon = contents["silicon"]
-            siliconperspec = contents["siliconperspec"]
-            gen1.update(
-                {"cost": contents["gen1"]["cost"], "amount": contents["gen1"]["amount"]})
-            print("[save] loaded!")
-        else:
-            print("[save] failed to load: save is disabled")
-
     def handleDebugPts(e):
         global silicon, saveenabled, debugsiliconnotiinuse
         try:
@@ -240,7 +213,8 @@ def main(page: ft.Page):
                     debugsiliconnotiinuse = False
                 else:
                     print(
-                        "[MainThread/Debug => Notifications] Notification Animation is playing, won't play overlapping animation")
+                        "[MainThread/Debug => Notifications] Notification Animation is playing, won't play "
+                        "overlapping animation")
             else:
                 print(
                     "[MainThread/Debug => SetSilicon] Set Silicon Text Field's value is invalid, won't set to that...")
@@ -248,7 +222,9 @@ def main(page: ft.Page):
             print(
                 "[MainThread/Handler => SaveHandle] Disabled saving, debug silicon handle is called")
         except Exception:  # ugh it doesn't catch because threads fucking suck
-            print("[MainThread/Debug => Notification] wow, thats funny, see, the user switched views before i could remove the notification, in conclusion, fuck you")
+            print(
+                "[MainThread/Debug => Notification] wow, thats funny, see, the user switched views before i could "
+                "remove the notification, in conclusion, fuck you")
 
     def handleBuyMax(e):
         global buymax
@@ -322,32 +298,49 @@ def main(page: ft.Page):
     def handleLegacyMode(e):
         global legacymodebool
         if legacymode.value:
-            page.views[0].appbar = ft.AppBar(title=ft.Text(f"CommandIncremental Legacy {version}", tooltip="the game but desktop"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(
-                ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CLOSE, icon_color=ft.colors.RED, on_click=lambda _: page.window_close())])
+            page.views[0].appbar = ft.AppBar(
+                title=ft.Text(f"CommandIncremental Legacy {version}", tooltip="the game but desktop"),
+                center_title=True,
+                actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"),
+                         ft.IconButton(
+                             ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"),
+                         ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"),
+                                       tooltip="Some debug utilities"),
+                         ft.IconButton(ft.icons.CLOSE, icon_color=ft.colors.RED,
+                                       on_click=lambda _: page.window_close())])
             page.views[0].controls.append(windowdragarea)
             page.views[0].update()
             legacymodebool = True
         else:
-            page.views[0].appbar = ft.AppBar(title=ft.Text(f"CommandIncremental Web {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go(
-                "/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities")])
+            page.views[0].appbar = ft.AppBar(title=ft.Text(f"CommandIncremental Web {version}", tooltip="the game"),
+                                             center_title=True,
+                                             actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go(
+                                                 "/settings"), tooltip="Settings"), ft.IconButton(ft.icons.UPGRADE,
+                                                                                                  on_click=lambda
+                                                                                                      _: page.go(
+                                                                                                      "/upgrades"),
+                                                                                                  tooltip="Upgrades"),
+                                                      ft.IconButton(ft.icons.BUG_REPORT,
+                                                                    on_click=lambda _: page.go("/debug"),
+                                                                    tooltip="Some debug utilities")])
             page.views[0].controls.remove(windowdragarea)
             page.views[0].update()
             legacymodebool = False
 
     def handleManualBoost(e):
         global silicon, siliconmultiplier, siliconperspec
-        silicon += siliconperspec*siliconmultiplier
-        
+        silicon += siliconperspec * siliconmultiplier
+
     def view1add(content):
         page.views[1].controls.append(content)
         page.views[1].update()
-        
+
     def handleConsoleCommand(e, cmd=None):
         global silicon, console_lastcmd
         # if console_lastcmd == "lastcmd":
-            # pass
-            # console_lastcmd = "get-silicon"
-            # ctbv = "get-silicon"
+        # pass
+        # console_lastcmd = "get-silicon"
+        # ctbv = "get-silicon"
         # else:
         if consoleTextBox.value:
             if not cmd:
@@ -385,7 +378,7 @@ def main(page: ft.Page):
             # consoleTextBox.value = ""
             # ctbv = console_lastcmd
             # ctbv = cmd
-            handleConsoleCommand(None, console_lastcmd) # idk why "" doesn't work :skull:
+            handleConsoleCommand(None, console_lastcmd)  # idk why "" doesn't work :skull:
         elif ctbv == "test" or ctbv == "t":
             view1add(ft.Text("Working!"))
             console_lastcmd = ctbv
@@ -394,30 +387,32 @@ def main(page: ft.Page):
             view1add(ft.Text(displaysiliconunit))
             view1add(ft.Text(displaysiliconunit2))
         # if not consoleTextBox.value:
-            # handleConsoleCommand(None, console_lastcmd)
-            
+        # handleConsoleCommand(None, console_lastcmd)
 
         # if not console_lastcmd == "lastcmd":
         # else:
-            # console_lastcmd = "get-silicon"
+        # console_lastcmd = "get-silicon"
         consoleTextBox.value = ""
 
     # page.views[1].update() # no idea how to make this work lmfao # faulty line 😡 # old line, ignore pls
-    fpscounter = ft.Text("FPS: [DISABLED]")
+    # fpscounter = ft.Text("FPS: [DISABLED]")
     buymaxbtn = ft.TextButton(
         f"Buy Max: {buymax}", on_click=handleBuyMax, tooltip="buy factories until you're outta silicons")
     # page.add(buymaxbtn)
-    siliconcounter = ft.Text(str(silicon)+" silicon",
+    siliconcounter = ft.Text(str(silicon) + " silicon",
                              tooltip="silicon counter yuh")
     buygen1button = ft.ElevatedButton(
-        f"Buy Basic anferiog i fucking forgor ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1, tooltip="buy them **basic** generators")
+        f"Buy Basic anferiog i fucking forgor ({gen1['amount']}) | Cost: {gen1['cost']}$", on_click=buygen1,
+        tooltip="buy them **basic** generators")
     # page.add(fpscounter, siliconcounter, buygen1button)
     savefiletf = ft.TextField(
         label="Save ID", tooltip="enter your save id here")
     debugsilicontf = ft.TextField(
-        label="Set Silicons", tooltip="set your silicon to specific value (debugging purposes + saving will be disabled)")
+        label="Set Silicons",
+        tooltip="set your silicon to specific value (debugging purposes + saving will be disabled)")
     updateintervaltf = ft.TextField(label="Update Interval", shift_enter=True, on_submit=handleUpdateInterval,
-                                    width=200, tooltip="sets your update interval (doesn't make you generate silicon faster ._.)")
+                                    width=200,
+                                    tooltip="sets your update interval (doesn't make you generate silicon faster ._.)")
     overflowwarn = ftn.createNoti(
         None, "Warning!", "Silicons are overflowing! Update thread has stopped!")
     debugsiliconnoti = ftn.createNoti(None, "Debug", "Changed silicon amount!")
@@ -449,7 +444,8 @@ def main(page: ft.Page):
     # END GAME UTILS
     legacymode = ft.Checkbox(label="Desktop Mode", on_change=handleLegacyMode)
     windowdragarea = ft.WindowDragArea(ft.Container(ft.Text("Drag the window!", tooltip="you can drag the window here"),
-                                       padding=10, alignment=ft.alignment.center, tooltip="drag the window here"), tooltip="lets you drag the window")
+                                                    padding=10, alignment=ft.alignment.center,
+                                                    tooltip="drag the window here"), tooltip="lets you drag the window")
     loadbutton = ft.ElevatedButton(
         "Load", on_click=handleNewLoad, tooltip="loads the game according to your save id")
     savebutton = ft.ElevatedButton(
@@ -457,9 +453,9 @@ def main(page: ft.Page):
 
     consoleTextBox = ft.TextField(label="Insert Command", shift_enter=True, on_submit=handleConsoleCommand)
 
-    # notatecheckbox.value
-    # page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load", on_click=handleLoad), savefiletf]))
-    # page.add(ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK, on_click=handleDebugPts)]))
+    # notatecheckbox.value page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load",
+    # on_click=handleLoad), savefiletf])) page.add(ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK,
+    # on_click=handleDebugPts)]))
 
     def buildApp(approute):
         page.views.clear()
@@ -467,8 +463,16 @@ def main(page: ft.Page):
         page.views.append(
             ft.View(
                 "/", [
-                    ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True, actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="Settings"), ft.IconButton(
-                        ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"), ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"), tooltip="Some debug utilities"), ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"), tooltip="In-app Console"), ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"), tooltip="Installed Plugins")]),
+                    ft.AppBar(title=ft.Text(f"CommandIncremental {version}", tooltip="the game"), center_title=True,
+                              actions=[ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"),
+                                                     tooltip="Settings"), ft.IconButton(
+                                  ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"),
+                                       ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"),
+                                                     tooltip="Some debug utilities"),
+                                       ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"),
+                                                     tooltip="In-app Console"),
+                                       ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"),
+                                                     tooltip="Installed Plugins")]),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, moneydisplay, buygen1button,
@@ -503,8 +507,9 @@ def main(page: ft.Page):
                         ]),
                         notatecheckbox,
                         darktheme,
-                        # legacymode
-                        # ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes the game") # tooltip used to be "gives you infinite silicon (for debugging purposes + saving *will* be disabled)" # i moved it
+                        # legacymode ft.TextButton("Infinite Silicon", on_click=handleInfSilicon, tooltip="crashes
+                        # the game") # tooltip used to be "gives you infinite silicon (for debugging purposes +
+                        # saving *will* be disabled)" # i moved it
                     ]
                 )
             )
@@ -534,7 +539,8 @@ def main(page: ft.Page):
                         ft.Row([debugsilicontf, ft.IconButton(
                             ft.icons.CHECK, on_click=handleDebugPts)]),
                         ft.TextButton("Infinite Silicon", on_click=handleInfSilicon,
-                                      tooltip="gives you basically infinite silicon (for debugging purposes + saving *will* be disabled)"),
+                                      tooltip="gives you basically infinite silicon (for debugging purposes + saving "
+                                              "*will* be disabled)"),
                         ft.Text("Changelog:",
                                 style=ft.TextThemeStyle.HEADLINE_MEDIUM),
                         ft.Text("1.2.7 | Added changelog to track stuff"),
@@ -566,7 +572,8 @@ def main(page: ft.Page):
                         ft.Text(
                             "1.4.6 | Made new upgrade + i didnt forgor buymax this time"),
                         ft.Text(
-                            "1.5 | New upgrade, saves more data, includes buy max handle for new upgrade, and more things i forgot!"),
+                            "1.5 | New upgrade, saves more data, includes buy max handle for new upgrade, and more "
+                            "things i forgot!"),
                         ft.Text("1.5.1 | Updated debug messages"),
                         ft.Text("1.5.2 | Added console that almost worked"),
                         ft.Text("1.5.3 | Added console inside the app"),
@@ -587,11 +594,11 @@ def main(page: ft.Page):
             plugincol = ft.Column()
             for i in range(pluginnames.__len__()):
                 plugincol.controls.append(
-                    ft.Text(pluginnames[i],style=ft.TextThemeStyle.HEADLINE_MEDIUM))
+                    ft.Text(pluginnames[i], style=ft.TextThemeStyle.HEADLINE_MEDIUM))
                 plugincol.controls.append(ft.Text(plugindescs[i], style=ft.TextThemeStyle.BODY_MEDIUM))
                 plugincol.controls.append(ft.Text(pluginvers[i], style=ft.TextThemeStyle.LABEL_SMALL))
-                plugincol.controls.append(ft.Divider(height=3,thickness=3))
-            
+                plugincol.controls.append(ft.Divider(height=3, thickness=3))
+
             page.views.append(ft.View(
                 "/plugins", [
                     ft.AppBar(title=ft.Text("CommandIncremental | Installed/Loaded Plugins")),
@@ -620,20 +627,25 @@ def main(page: ft.Page):
             notate = False
         if notate:
             siliconcounter.value = "{:e} {0} | ".format(
-                silicon, displaysiliconunit)+str("{:e.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
-            buygen1button.text = "Buy Basic {0} Factory ("+"{:e}".format(
-                gen1['amount'], displaysiliconunit2)+") | Cost: {:e}☼".format(gen1['cost'])
-            moneydisplay.value = "{:e} {0} | ".format(money, displaymoneyunit)+str("{:e.3f}".format(moneyperspec))+f" {displaymoneyunit} per {silicongenwaittime} sec"
+                silicon, displaysiliconunit) + str(
+                "{:e.3f}".format(siliconperspec)) + f" {displaysiliconunit} per {silicongenwaittime} sec"
+            buygen1button.text = "Buy Basic {0} Factory (" + "{:e}".format(
+                gen1['amount'], displaysiliconunit2) + ") | Cost: {:e}☼".format(gen1['cost'])
+            moneydisplay.value = "{:e} {0} | ".format(money, displaymoneyunit) + str(
+                "{:e.3f}".format(moneyperspec)) + f" {displaymoneyunit} per {silicongenwaittime} sec"
         else:
             siliconcounter.value = "{} {} | ".format(
-                silicon, displaysiliconunit)+str("{:.3f}".format(siliconperspec))+f" {displaysiliconunit} per {silicongenwaittime} sec"
-            buygen1button.text = "Buy Basic {} Factory (".format(displaysiliconunit2)+"{}".format(
-                gen1['amount'])+") | Cost: {}☼".format(gen1['cost'])
-            moneydisplay.value = "{0} {1} | ".format(money, displaymoneyunit)+str("{:.3f}".format(moneyperspec))+f" {displaymoneyunit} per {silicongenwaittime} sec"
+                silicon, displaysiliconunit) + str(
+                "{:.3f}".format(siliconperspec)) + f" {displaysiliconunit} per {silicongenwaittime} sec"
+            buygen1button.text = "Buy Basic {} Factory (".format(displaysiliconunit2) + "{}".format(
+                gen1['amount']) + ") | Cost: {}☼".format(gen1['cost'])
+            moneydisplay.value = "{0} {1} | ".format(money, displaymoneyunit) + str(
+                "{:.3f}".format(moneyperspec)) + f" {displaymoneyunit} per {silicongenwaittime} sec"
 
         # fpscounter.value = "FPS: " + str(1.0 / (time.time() - starttime)) # raw clock speed fps # due to reasons
         page.update()
-        # make the game capped at 12 fps (0.083333333333333328707 sec) # nvm its changable # also the default value is now 0.0025
+        # make the game capped at 12 fps (0.083333333333333328707 sec) # nvm its changable # also the default value
+        # is now 0.0025
         time.sleep(updateinterval)
         if buymax is True:
             buygen1(None)
@@ -652,7 +664,8 @@ def main(page: ft.Page):
             time.sleep(0.25)
             page.window_close()
             quit()
-        # print(f"[MainThread/PluginHelper => PrintPluginWantsToAddPage] {pluginwantstoaddpage} | {pluginwantstoaddpage_content}")
+        # print(f"[MainThread/PluginHelper => PrintPluginWantsToAddPage] {pluginwantstoaddpage} | {
+        # pluginwantstoaddpage_content}")
         if pluginwantstoaddpage:
             page.views[0].controls.append(pluginwantstoaddpage_content)
             page.views[0].update()
@@ -667,16 +680,17 @@ def update():
         if not silicon > 1e+308:
             if not silicon >= maxsilicon:
                 # if not console_setsiliconval:
-                silicon += siliconperspec*siliconmultiplier
-                # else:
-                    # silicon = console_setsiliconval
-                    # console_setsiliconval = None # workaround cus console thread can't set due to being in a different process; simulating it's own main enviroment
-                # no actually fuck this
+                silicon += siliconperspec * siliconmultiplier
+                # else: silicon = console_setsiliconval console_setsiliconval = None # workaround cus console thread
+                # can't set due to being in a different process; simulating it's own main enviroment no actually fuck
+                # this
             else:
                 print(
                     "[UpdateThread/Update] Cannot Add Silicon, Reached Maximum Bank Capacity")
         else:
-            print("[UpdateThread/Update => InvalidChecker] Silicon value is infinite, either you cheated, or you beat the game")
+            print(
+                "[UpdateThread/Update => InvalidChecker] Silicon value is infinite, either you cheated, or you beat "
+                "the game")
             quit()
         time.sleep(silicongenwaittime)
 
@@ -707,7 +721,7 @@ def interactableConsole():
                 if os.name == "nt":
                     os.system("taskkill /f /im python.exe")
                     os.system("taskkill /f /im python3.exe")
-                    
+
                 else:
                     os.system("killall python3")
                     os.system("pkill python3")
