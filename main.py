@@ -743,4 +743,4 @@ if __name__ == "__main__":
     # consoleThread.start()
     # appThread = Thread(target=lambda: ft.app(target=main, port=8000, view=ft.WEB_BROWSER))
     # appThread.start()
-    ft.app(target=main, port=8000, view=ft.WEB_BROWSER, route_url_strategy="path")
+    ft.app(target=main, port=8000, view=ft.WEB_BROWSER, route_url_strategy="path", assets_dir="assets")
