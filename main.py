@@ -34,7 +34,7 @@ moneymultiplier: float = 1
 displaymoneyunit: str = bindings.moneydisplayunit
 displaymoneyunit2: str = bindings.moneydisplayunit2
 
-gen1: dict[str, Any] = {
+gen1 = {
     "cost": 10,
     "growth": 1.28,
     "amount": 0
