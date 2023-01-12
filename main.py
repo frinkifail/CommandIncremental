@@ -42,7 +42,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.7.4"  # forgor to bump version
+version: str = "1.7.5"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -340,7 +340,7 @@ def main(page: ft.Page):
                                                                                                       _: page.go(
                                                                                                       "/upgrades"),
                                                                                                   tooltip="Upgrades"),
-                                                      ft.IconButton(ft.icons.BUG_REPORT,
+                                                      ft.IconButton(ft.icons.BUG_REPORT, # what happened here lmao
                                                                     on_click=lambda _: page.go("/debug"),
                                                                     tooltip="Some debug utilities")])
             page.views[0].controls.remove(windowdragarea)
@@ -482,7 +482,7 @@ def main(page: ft.Page):
     
     ############ LOGIN #################
     def handleLogin(e):
-        global signed_up, logged_in
+        global signed_up, logged_in, key
         if log_key_tf.value:
             if log_password_tf.value == db[log_key_tf.value]["password"]:
                 print("Correct password!")
