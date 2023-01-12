@@ -398,7 +398,7 @@ def main(page: ft.Page):
             # consoleTextBox.value = ""
             # ctbv = console_lastcmd
             # ctbv = cmd
-            handleConsoleCommand(None, console_lastcmd)  # idk why "" doesn't work :skull:
+            handleConsoleCommand(None, console_lastcmd)  # idk why "" doesn't work :skull: # oh wait fuck it clears it uhhh
         elif ctbv == "test" or ctbv == "t":
             view1add(ft.Text("Working!"))
             console_lastcmd = ctbv
