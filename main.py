@@ -21,55 +21,56 @@ from typing import *
 silicon: float = 10
 siliconperspec: float = 0.108
 maxsilicon: float = 15
-maxsiliconcost = 10
+maxsiliconcost: float = 10
 siliconmultiplier: float = 1
-siliconmultipliercost = 365
-displaysiliconunit = bindings.displayunit
-displaysiliconunit2 = bindings.displayunit2
+siliconmultipliercost: float = 365
+displaysiliconunit: str = bindings.displayunit
+displaysiliconunit2: str = bindings.displayunit2
 
 money: float = 0
 moneyperspec: float = 0
-maxmoney = 1e307
-moneymultiplier = 1
-displaymoneyunit = bindings.moneydisplayunit
-displaymoneyunit2 = bindings.moneydisplayunit2
+maxmoney: float = 1e307
+moneymultiplier: float = 1
+displaymoneyunit: str = bindings.moneydisplayunit
+displaymoneyunit2: str = bindings.moneydisplayunit2
 
-gen1 = {
+gen1: dict[str, Any] = {
     "cost": 10,
     "growth": 1.28,
     "amount": 0
 }
-buymax = False
-saveenabled = True
-updateinterval = 0.0025
+buymax: bool = False
+saveenabled: bool = True
+updateinterval: float = 0.0025
 version: str = "1.7.1"  # forgor to bump version
 # Other shit used in main function
-debugsiliconnotiinuse = False
-notate = True
-legacymodebool = False
-silicongenwaittime = 0.8
-silicongenwaittimecost = 550
-consolepage = "main"
-console_setsiliconval = None
-console_lastcmd = ""
-pluginscriptfiles = []
-pluginwantstoaddpage = False
-pluginwantstoaddpage_content = None
-plugins = []
-pluginnames = []
-plugindescs = []
-pluginvers = []
+debugsiliconnotiinuse: bool = False
+notate: bool = True
+legacymodebool: bool = False
+silicongenwaittime: float = 0.8
+silicongenwaittimecost: float = 550
+consolepage: str = "main"
+console_setsiliconval: None = None
+console_lastcmd: str = ""
+pluginscriptfiles: list[str] = []
+pluginwantstoaddpage: bool = False
+pluginwantstoaddpage_content: None = None
+plugins: list[str] = []
+pluginnames: list[str] = []
+plugindescs: list[str] = []
+pluginvers: list[str] = []
 
+signed_up: bool = False
 
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
         super().__init__()
-        self.title = title
-        self.desc = description
-        self.icon = icon
-        self.completed = False
-        self.checkmark = ft.Icon(ft.icons.CHECK, color=ft.colors.GREEN_ACCENT)
-        self.already_completed = False
+        self.title: str = title
+        self.desc: str = description
+        self.icon: ft.Icon = icon
+        self.completed: bool = False
+        self.checkmark: ft.Icon = ft.Icon(ft.icons.CHECK, color=ft.colors.GREEN_ACCENT)
+        self.already_completed: bool = False
         self.maincontainer = ft.Container(ft.Column([ft.Row([self.icon, ft.Text(self.title, style=ft.TextThemeStyle.HEADLINE_SMALL)]), ft.Text(self.desc, style=ft.TextThemeStyle.LABEL_LARGE)]))
     def build(self):
         return self.maincontainer
@@ -150,7 +151,7 @@ def main(page: ft.Page):
     global buymax
     page.title = "CommandIncremental"
     page.theme_mode = ft.ThemeMode.DARK
-    page.scroll = "adaptive"
+    page.scroll = ft.ScrollMode.ADAPTIVE
     page.window_frameless = True
     page.window_maximizable = False
     page.window_width = 800
@@ -477,18 +478,22 @@ def main(page: ft.Page):
     
     ############ LOGIN #################
     def handleLogin(e):
+        global signed_up
         if log_key_tf.value:
             if log_password_tf.value == db[log_key_tf.value]["password"]:
                 print("Correct password!")
+                if not signed_up: signed_up = True
     def handleSignup(e) -> None:
+        global signed_up
         if log_key_tf.value:
             if log_password_tf.value:
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
-    log_key_tf = ft.TextField(label="Key")
-    log_password_tf = ft.TextField(label="Password", password=True)
-    log_done_btn = ft.IconButton(ft.icons.CHECK, on_click=handleLogin)
-    log_signup_btn = ft.IconButton(ft.icons.CHECK, on_click=handleSignup)
+                if not signed_up: signed_up = True
+    log_key_tf: ft.TextField = ft.TextField(label="Key")
+    log_password_tf: ft.TextField = ft.TextField(label="Password", password=True)
+    log_done_btn: ft.IconButton = ft.IconButton(ft.icons.CHECK, on_click=handleLogin)
+    log_signup_btn: ft.IconButton = ft.IconButton(ft.icons.CHECK, on_click=handleSignup)
     ############ END LOGIN #################
 
     # notatecheckbox.value page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load",
@@ -761,8 +766,10 @@ def update():
                 # can't set due to being in a different process; simulating it's own main enviroment no actually fuck
                 # this
             else:
-                print(
-                    "[UpdateThread/Update] Cannot Add Silicon, Reached Maximum Bank Capacity")
+                #print(
+                #    "[UpdateThread/Update] Cannot Add Silicon, Reached Maximum Bank Capacity")
+                # SILENT
+                pass
         else:
             print(
                 "[UpdateThread/Update => InvalidChecker] Silicon value is infinite, either you cheated, or you beat "
