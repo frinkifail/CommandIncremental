@@ -42,7 +42,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.7.5"  # forgor to bump version
+version: str = "1.7.6"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -496,6 +496,7 @@ def main(page: ft.Page):
                 print("[MainThread/Login/Signup => Signuper] Signup functionn triggered (All the values are filled)")
                 if db[log_key_tf.value]: print("[MainThread/Login/Signup => AlreadyRegistered] Cannot continue!"); view1add(ft.Text("Failed to signup: Invalid key")); return;
                 else: pass
+                db[log_key_tf.value] = {}
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
                 if not signed_up: signed_up = True; print("[MainThread/Login/Signup => SignupChanger] Changed signed_up! ({})".format(signed_up))
@@ -677,7 +678,7 @@ def main(page: ft.Page):
                         ft.Text("1.7.3 | uhh yeah proper signup that works and yes now SHUTTTTTTTTTT"),
                         ft.Text("1.7.4 | placeholder is very attention catchy!!"),
                         ft.Text("1.7.5 | I completely forgot what i did in this update lmao"),
-                        
+                        ft.Text("1.7.6 | Fix not being able to signup")
                     ]
                 )
             )
