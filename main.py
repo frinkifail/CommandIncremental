@@ -52,13 +52,13 @@ silicongenwaittimecost: float = 550
 consolepage: str = "main"
 console_setsiliconval: None = None
 console_lastcmd: str = ""
-pluginscriptfiles: list[str] = []
+pluginscriptfiles = []
 pluginwantstoaddpage: bool = False
 pluginwantstoaddpage_content: None = None
-plugins: list[str] = []
-pluginnames: list[str] = []
-plugindescs: list[str] = []
-pluginvers: list[str] = []
+plugins = []
+pluginnames = []
+plugindescs = []
+pluginvers = []
 
 signed_up: bool = False
 
