@@ -523,6 +523,7 @@ def main(page: ft.Page):
                                                      tooltip="Installed Plugins"),
                                        ft.IconButton(ft.icons.ABC, on_click=lambda _: page.go("/advancements"),
                                                      tooltip="Advancements")]),
+                    ft.Text("Not logged in!") if not logged_in else ft.Text(),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, moneydisplay, buygen1button,
