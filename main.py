@@ -180,7 +180,7 @@ def main(page: ft.Page):
         else:
             print("[MainThread/Generators => 1] not enough silicon")
 
-    def handleNewSave(e):
+    def handleNewSave(e) -> None:
         if saveenabled:
             db["silicon"] = silicon
             db["siliconperspec"] = siliconperspec
