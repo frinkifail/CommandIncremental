@@ -351,7 +351,7 @@ def main(page: ft.Page):
         global silicon, siliconmultiplier, siliconperspec
         silicon += siliconperspec * siliconmultiplier
 
-    def view1add(content):
+    def view1add(content: ft.Control):
         page.views[1].controls.append(content)
         page.views[1].update()
 
@@ -488,12 +488,14 @@ def main(page: ft.Page):
                 print("Correct password!")
                 if not signed_up: signed_up = True
                 if not logged_in: logged_in = True
+                key = log_key_tf.value
     def handleSignup(e) -> None:
         global signed_up
         if log_key_tf.value:
             if log_password_tf.value:
                 print("[MainThread/Login/Signup => Signuper] Signup functionn triggered (All the values are filled)")
-                db[log_key_tf.value] = {}
+                if db[log_key_tf.value]: print("[MainThread/Login/Signup => AlreadyRegistered] Cannot continue!"); view1add(ft.Text("Failed to signup: Invalid key")); return;
+                else: pass
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
                 if not signed_up: signed_up = True; print("[MainThread/Login/Signup => SignupChanger] Changed signed_up! ({})".format(signed_up))
