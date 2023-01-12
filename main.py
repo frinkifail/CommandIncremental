@@ -488,10 +488,11 @@ def main(page: ft.Page):
         global signed_up
         if log_key_tf.value:
             if log_password_tf.value:
+                print("[MainThread/Login/Signup => Signuper] Signup functionn triggered (All the values are filled)")
                 db[log_key_tf.value] = {}
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
-                if not signed_up: signed_up = True
+                if not signed_up: signed_up = True; print("[MainThread/Login/Signup => SignupChanger] Changed signed_up!")
     log_key_tf: ft.TextField = ft.TextField(label="Key")
     log_password_tf: ft.TextField = ft.TextField(label="Password", password=True)
     log_done_btn: ft.IconButton = ft.IconButton(ft.icons.CHECK, on_click=handleLogin)
