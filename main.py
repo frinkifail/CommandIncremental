@@ -578,8 +578,8 @@ def main(page: ft.Page):
                         ft.Text("CommandIncremental | Signup", style=ft.TextThemeStyle.DISPLAY_SMALL),
                         log_key_tf,
                         log_password_tf,
-                        log_signup_btn,
-                        ft.OutlinedButton("To Login", on_click=lambda _: page.go("/login"))
+                        ft.Row([log_signup_btn,
+                        ft.OutlinedButton("To Login", on_click=lambda _: page.go("/login"))])
                     ]
                 )
             )
