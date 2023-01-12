@@ -42,7 +42,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.7.6"  # forgor to bump version
+version: str = "1.7.7"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -681,6 +681,7 @@ def main(page: ft.Page):
                         ft.Text("1.7.4 | placeholder is very attention catchy!!"),
                         ft.Text("1.7.5 | I completely forgot what i did in this update lmao"),
                         ft.Text("1.7.6 | Fix not being able to signup"),
+                        ft.Text("1.7.7 | Fix not being able to signup again..."),
                         
                     ]
                 )
