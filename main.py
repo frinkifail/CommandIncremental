@@ -62,6 +62,7 @@ pluginvers = []
 
 signed_up: bool = False
 force_allow_no_login: bool = True
+logged_in: bool = False
 
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
@@ -577,7 +578,8 @@ def main(page: ft.Page):
                         ft.Text("CommandIncremental | Signup", style=ft.TextThemeStyle.DISPLAY_SMALL),
                         log_key_tf,
                         log_password_tf,
-                        log_signup_btn
+                        log_signup_btn,
+                        ft.OutlinedButton("To Login", on_click=lambda _: page.go("/login"))
                     ]
                 )
             )
@@ -700,10 +702,17 @@ def main(page: ft.Page):
     # page.go("/")
     page.on_route_change = buildApp
     page.on_view_pop = view_pop
-    if not force_allow_no_login: page.go("/login")
+    if signed_up:
+        page.go("/login")
+        print("[MainThread/PageGo => SignedUpChecker] Detected is signed up!")
+    elif not signed_up:
+        page.go("/signup")
+        print("[MainThread/PageGo => SignedUpChecker] Detected not signed up!")
+    elif logged_in:
+        page.go("/")
+        print("[MainThread/PageGo => SignedUpChecker] Detected logged in!")
     else:
-        if not signed_up: page.go("/signup")
-        else: page.go("/")
+        print("[MainThread/PageGo => SignedUpChecker] Detected signed up is unknown!")
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
