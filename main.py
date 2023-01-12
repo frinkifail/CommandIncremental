@@ -494,8 +494,10 @@ def main(page: ft.Page):
         if log_key_tf.value:
             if log_password_tf.value:
                 print("[MainThread/Login/Signup => Signuper] Signup functionn triggered (All the values are filled)")
-                if db[log_key_tf.value]: print("[MainThread/Login/Signup => AlreadyRegistered] Cannot continue!"); view1add(ft.Text("Failed to signup: Invalid key")); return;
-                else: pass
+                try:
+                    if db[log_key_tf.value]: print("[MainThread/Login/Signup => AlreadyRegistered] Cannot continue!"); view1add(ft.Text("Failed to signup: Invalid key")); return;
+                except:
+                    pass
                 db[log_key_tf.value] = {}
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
