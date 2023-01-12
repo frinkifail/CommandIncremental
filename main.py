@@ -42,7 +42,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.7.3"  # forgor to bump version
+version: str = "1.7.4"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -523,7 +523,7 @@ def main(page: ft.Page):
                                                      tooltip="Installed Plugins"),
                                        ft.IconButton(ft.icons.ABC, on_click=lambda _: page.go("/advancements"),
                                                      tooltip="Advancements")]),
-                    ft.Text("Not logged in!") if not logged_in else ft.Text(),
+                    ft.Text("Not logged in!", tooltip="log in to get rid of this message", text_align=ft.TextAlign.CENTER, style=ft.TextThemeStyle.BODY_LARGE) if not logged_in else ft.Text(),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, moneydisplay, buygen1button,
@@ -622,12 +622,12 @@ def main(page: ft.Page):
                         ft.AppBar(title=ft.Text(
                             "CommandIncremental | Debug Utilities")),
                         ft.Row([debugsilicontf, ft.IconButton(
-                            ft.icons.CHECK, on_click=handleDebugPts)]),
+                            ft.icons.CHECK, on_click=handleDebugPts, tooltip="get yo silicons!!")]),
                         ft.TextButton("Infinite Silicon", on_click=handleInfSilicon,
                                       tooltip="gives you basically infinite silicon (for debugging purposes + saving "
                                               "*will* be disabled)"),
                         ft.Text("Changelog:",
-                                style=ft.TextThemeStyle.HEADLINE_MEDIUM),
+                                style=ft.TextThemeStyle.HEADLINE_MEDIUM, tooltip="yo, what's good?"),
                         ft.Text("1.2.7 | Added changelog to track stuff"),
                         ft.Text(
                             "1.2.7.1 | Minor spelling mistake *earth collapsing*"),
@@ -668,6 +668,7 @@ def main(page: ft.Page):
                         ft.Text("1.7.1 | stuff n more for login"),
                         ft.Text("1.7.2 | SIGNUP?????????? WOW NEVER EXPECTED!!!"),
                         ft.Text("1.7.3 | uhh yeah proper signup that works and yes now SHUTTTTTTTTTT"),
+                        ft.Text("1.7.4 | placeholder is very attention catchy!!"),
                         
                     ]
                 )
