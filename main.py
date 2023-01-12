@@ -488,6 +488,7 @@ def main(page: ft.Page):
         global signed_up
         if log_key_tf.value:
             if log_password_tf.value:
+                db[log_key_tf.value] = {}
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
                 if not signed_up: signed_up = True
