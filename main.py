@@ -63,6 +63,7 @@ pluginvers = []
 signed_up: bool = False
 force_allow_no_login: bool = True
 logged_in: bool = False
+key: str = ""
 
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
@@ -181,32 +182,33 @@ def main(page: ft.Page):
             print("[MainThread/Generators => 1] not enough silicon")
 
     def handleNewSave(e) -> None:
+        global key
         if saveenabled:
-            db["silicon"] = silicon
-            db["siliconperspec"] = siliconperspec
-            db["gen1"] = gen1
-            db["maxsilicon"] = {"max": maxsilicon, "cost": maxsiliconcost}
-            db["silicongwt"] = silicongenwaittime
-            db["silicongwt_c"] = silicongenwaittimecost
-            db["siliconmul"] = siliconmultiplier
-            db["siliconmul_c"] = siliconmultipliercost
+            db[key]["silicon"] = silicon
+            db[key]["siliconperspec"] = siliconperspec
+            db[key]["gen1"] = gen1
+            db[key]["maxsilicon"] = {"max": maxsilicon, "cost": maxsiliconcost}
+            db[key]["silicongwt"] = silicongenwaittime
+            db[key]["silicongwt_c"] = silicongenwaittimecost
+            db[key]["siliconmul"] = siliconmultiplier
+            db[key]["siliconmul_c"] = siliconmultipliercost
             print('[MainThread/Handler => Save] Statistics Saved!')
         else:
             print(
                 '[MainThread/Handler => Save] Failed to save: Saving/Loading is disabled')
 
     def handleNewLoad(e):
-        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost, silicongenwaittime, silicongenwaittimecost, siliconmultiplier, siliconmultipliercost
+        global silicon, siliconperspec, gen1, maxsilicon, maxsiliconcost, silicongenwaittime, silicongenwaittimecost, siliconmultiplier, siliconmultipliercost, key
         if saveenabled:
-            silicon = db["silicon"]
-            siliconperspec = db["siliconperspec"]
-            gen1 = db["gen1"]
-            maxsilicon = db["maxsilicon"]["max"]
-            maxsiliconcost = db["maxsilicon"]["cost"]
-            silicongenwaittime = db["silicongwt"]
-            silicongenwaittimecost = db["silicongwt_c"]
-            siliconmultiplier = db["siliconmul"]
-            siliconmultipliercost = db["siliconmul_c"]
+            silicon = db[key]["silicon"]
+            siliconperspec = db[key]["siliconperspec"]
+            gen1 = db[key]["gen1"]
+            maxsilicon = db[key]["maxsilicon"]["max"]
+            maxsiliconcost = db[key]["maxsilicon"]["cost"]
+            silicongenwaittime = db[key]["silicongwt"]
+            silicongenwaittimecost = db[key]["silicongwt_c"]
+            siliconmultiplier = db[key]["siliconmul"]
+            siliconmultipliercost = db[key]["siliconmul_c"]
             print('[MainThread/Handler => Load] Statistics Loaded!')
         else:
             print(
@@ -506,8 +508,11 @@ def main(page: ft.Page):
     # on_click=handleDebugPts)]))
 
     def buildApp(approute):
+        global saveenabled
         page.views.clear()
         # if page.route == "/":
+        if not logged_in:
+            saveenabled = False
         page.views.append(
             ft.View(
                 "/", [
