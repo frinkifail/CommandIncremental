@@ -42,7 +42,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.7"  # forgor to bump version
+version: str = "1.7.1"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -478,11 +478,17 @@ def main(page: ft.Page):
     ############ LOGIN #################
     def handleLogin(e):
         if log_key_tf.value:
-            if log_password_tf.value == db[log_key_tf]["password"]:
+            if log_password_tf.value == db[log_key_tf.value]["password"]:
                 print("Correct password!")
+    def handleSignup(e) -> None:
+        if log_key_tf.value:
+            if log_password_tf.value:
+                db[log_key_tf.value]["key"] = log_key_tf.value
+                db[log_key_tf.value]["password"] = log_password_tf.value
     log_key_tf = ft.TextField(label="Key")
     log_password_tf = ft.TextField(label="Password", password=True)
     log_done_btn = ft.IconButton(ft.icons.CHECK, on_click=handleLogin)
+    log_signup_btn = ft.IconButton(ft.icons.CHECK, on_click=handleSignup)
     ############ END LOGIN #################
 
     # notatecheckbox.value page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load",
@@ -555,6 +561,17 @@ def main(page: ft.Page):
                     log_password_tf,
                     log_done_btn
                 ])
+            )
+        elif page.route == "/signup":
+            page.views.append(
+                ft.View(
+                    "/signup", [
+                        ft.Text("CommandIncremental | Signup", style=ft.TextThemeStyle.DISPLAY_SMALL),
+                        log_key_tf,
+                        log_password_tf,
+                        log_signup_btn
+                    ]
+                )
             )
         elif page.route == "/upgrades":
             page.views.append(
@@ -633,10 +650,10 @@ def main(page: ft.Page):
                         ft.Text("1.5.1 | Updated debug messages"),
                         ft.Text("1.5.2 | Added console that almost worked"),
                         ft.Text("1.5.3 | Added console inside the app"),
-                        ft.Text("1.6 | Kinda plugin support or smth idk"),
                         ft.Text("1.6.1 | Metadata support + bug fixes (you couldn't load multiple plugins)"),
                         ft.Text("1.7 | i forgot to write the changelogs for 1.6.2 so shut up,"),
                         ft.Text("1.7 | in 1.7, i made a login screen and in 1.6.2 i made an advancements system so dont complain i didnt make a changelog for it"),
+                        ft.Text("1.7.1 | stuff n more for login"),
                         
                     ]
                 )
@@ -674,7 +691,7 @@ def main(page: ft.Page):
     # page.go("/")
     page.on_route_change = buildApp
     page.on_view_pop = view_pop
-    page.go(page.route)
+    page.go("/login")
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
