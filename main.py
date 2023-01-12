@@ -61,6 +61,7 @@ plugindescs = []
 pluginvers = []
 
 signed_up: bool = False
+force_allow_no_login: bool = True
 
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
@@ -697,7 +698,8 @@ def main(page: ft.Page):
     # page.go("/")
     page.on_route_change = buildApp
     page.on_view_pop = view_pop
-    page.go("/login")
+    if not force_allow_no_login: page.go("/login")
+    else: page.go("/signup")
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
