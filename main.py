@@ -42,7 +42,7 @@ gen1 = {
 buymax = False
 saveenabled = True
 updateinterval = 0.0025
-version: str = "1.6.1"  # forgor to bump version
+version: str = "1.7"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse = False
 notate = True
@@ -60,6 +60,28 @@ pluginnames = []
 plugindescs = []
 pluginvers = []
 
+
+class Advancement(ft.UserControl):
+    def __init__(self, title: str, description: str, icon: ft.Icon):
+        super().__init__()
+        self.title = title
+        self.desc = description
+        self.icon = icon
+        self.completed = False
+        self.checkmark = ft.Icon(ft.icons.CHECK, color=ft.colors.GREEN_ACCENT)
+        self.already_completed = False
+        self.maincontainer = ft.Container(ft.Column([ft.Row([self.icon, ft.Text(self.title, style=ft.TextThemeStyle.HEADLINE_SMALL)]), ft.Text(self.desc, style=ft.TextThemeStyle.LABEL_LARGE)]))
+    def build(self):
+        return self.maincontainer
+    def if_completed(self):
+        if self.completed:
+            if not self.already_completed: self.maincontainer.content.controls[0].controls.append(self.checkmark)
+            self.already_completed = True
+        else:
+            try: self.maincontainer.content.controls[0].controls.remove(self.checkmark)
+            except: print("[ParentThread/Advancement => Remove] Couldn't remove checkmark!")
+    def complete(self): self.completed = True
+    def uncomplete(self): self.completed = False
 
 def setSilicon(count: float):
     global silicon
@@ -95,6 +117,7 @@ def loadPlugins():
     scriptfiles = []
     # print(["Hi", "API"].remove("API"))
     print("[ParentThread/PluginLoader => PluginChecker] Available plugins: " + str(plugins))
+    
     for i in range(plugins.__len__()):
         try:
             os.chdir(plugins[i])
@@ -132,19 +155,6 @@ def main(page: ft.Page):
     page.window_maximizable = False
     page.window_width = 800
     page.window_height = 600
-    page.tooltip = ft.Tooltip(gradient=ft.LinearGradient(
-        begin=ft.alignment.top_left,
-        end=ft.alignment.Alignment(0.8, 1),
-        colors=[
-            "0xff1f005c",
-            "0xff5b0060",
-            "0xff870160",
-            "0xffac255e",
-            "0xffca485c",
-            "0xffe16b5c",
-            "0xfff39060",
-            "0xffffb56b",
-        ]))
 
     # Other Variables
     # debugsiliconnotiinuse = False
@@ -158,6 +168,11 @@ def main(page: ft.Page):
             gen1["cost"] *= gen1["growth"]
             gen1["amount"] += 1
             siliconperspec += 0.18
+            adv_firstgen.complete()
+            if adv_firstgen.already_completed:
+                pass
+            else:
+                adv_gainnoti[3](None)
             print("[MainThread/Generators => 1] bought!")
         else:
             print("[MainThread/Generators => 1] not enough silicon")
@@ -452,6 +467,23 @@ def main(page: ft.Page):
         "Save", on_click=handleNewSave, tooltip="saves the game according to your save id")
 
     consoleTextBox = ft.TextField(label="Insert Command", shift_enter=True, on_submit=handleConsoleCommand)
+    
+    ############## ADVANCEMENTS #################
+    adv_newcomer = Advancement("Newcomer", "Play the game.", ft.Icon(ft.icons.PLAY_ARROW))
+    adv_firstgen = Advancement("First Generator", "Buy your first generator.", ft.Icon(ft.icons.FACTORY))
+    
+    adv_gainnoti = ftn.createNoti(None, "Advancing!", "You gained an advancement! Check it out in the Advancements tab!")
+    ############ END ADVANCEMENTS ###############
+    
+    ############ LOGIN #################
+    def handleLogin(e):
+        if log_key_tf.value:
+            if log_password_tf.value == db[log_key_tf]["password"]:
+                print("Correct password!")
+    log_key_tf = ft.TextField(label="Key")
+    log_password_tf = ft.TextField(label="Password", password=True)
+    log_done_btn = ft.IconButton(ft.icons.CHECK, on_click=handleLogin)
+    ############ END LOGIN #################
 
     # notatecheckbox.value page.add(ft.Row([ft.ElevatedButton("Save", on_click=handleSave), ft.ElevatedButton("Load",
     # on_click=handleLoad), savefiletf])) page.add(ft.Row([debugsilicontf, ft.IconButton(ft.icons.CHECK,
@@ -472,14 +504,16 @@ def main(page: ft.Page):
                                        ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"),
                                                      tooltip="In-app Console"),
                                        ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"),
-                                                     tooltip="Installed Plugins")]),
+                                                     tooltip="Installed Plugins"),
+                                       ft.IconButton(ft.icons.ABC, on_click=lambda _: page.go("/advancements"),
+                                                     tooltip="Advancements")]),
                     # used to be window drag area,
                     # windowdragarea if os.name == "nt" or os.name == "posix" else None,
                     siliconcounter, moneydisplay, buygen1button,
                     buymaxbtn,
+                    adv_gainnoti[0],
                     manualboost
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
-
                 ]
             )
         )
@@ -513,6 +547,15 @@ def main(page: ft.Page):
                     ]
                 )
             )
+        elif page.route == "/login": # :scream:
+            page.views.append(
+                ft.View("/login",[
+                    ft.Text("CommandIncremental | Login", style=ft.TextThemeStyle.DISPLAY_SMALL),
+                    log_key_tf,
+                    log_password_tf,
+                    log_done_btn
+                ])
+            )
         elif page.route == "/upgrades":
             page.views.append(
                 ft.View(
@@ -530,6 +573,19 @@ def main(page: ft.Page):
                     ]
                 )
             )
+        elif page.route == "/advancements":
+            adv_newcomer.complete()
+            page.views.append(
+                ft.View(
+                    "/advancements", [
+                        ft.AppBar(title=ft.Text("CommandIncremental | Advancements")),
+                        adv_newcomer,
+                        adv_firstgen,
+                    ]
+                )
+            )
+            adv_newcomer.if_completed()
+            adv_firstgen.if_completed()
         elif page.route == "/debug":
             page.views.append(
                 ft.View(
@@ -578,7 +634,10 @@ def main(page: ft.Page):
                         ft.Text("1.5.2 | Added console that almost worked"),
                         ft.Text("1.5.3 | Added console inside the app"),
                         ft.Text("1.6 | Kinda plugin support or smth idk"),
-                        ft.Text("1.6.1 | Metadata support + bug fixes (you couldn't load multiple plugins)")
+                        ft.Text("1.6.1 | Metadata support + bug fixes (you couldn't load multiple plugins)"),
+                        ft.Text("1.7 | i forgot to write the changelogs for 1.6.2 so shut up,"),
+                        ft.Text("1.7 | in 1.7, i made a login screen and in 1.6.2 i made an advancements system so dont complain i didnt make a changelog for it"),
+                        
                     ]
                 )
             )
@@ -743,4 +802,4 @@ if __name__ == "__main__":
     # consoleThread.start()
     # appThread = Thread(target=lambda: ft.app(target=main, port=8000, view=ft.WEB_BROWSER))
     # appThread.start()
-    ft.app(target=main, port=8000, view=ft.WEB_BROWSER, route_url_strategy="path")
+    ft.app(target=main, port=8000, view=ft.WEB_BROWSER)
