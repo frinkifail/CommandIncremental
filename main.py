@@ -700,7 +700,9 @@ def main(page: ft.Page):
     page.on_route_change = buildApp
     page.on_view_pop = view_pop
     if not force_allow_no_login: page.go("/login")
-    else: page.go("/signup")
+    else:
+        if not signed_up: page.go("/signup")
+        else: page.go("/")
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
