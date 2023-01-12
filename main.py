@@ -676,6 +676,7 @@ def main(page: ft.Page):
                         ft.Text("1.7.2 | SIGNUP?????????? WOW NEVER EXPECTED!!!"),
                         ft.Text("1.7.3 | uhh yeah proper signup that works and yes now SHUTTTTTTTTTT"),
                         ft.Text("1.7.4 | placeholder is very attention catchy!!"),
+                        ft.Text("1.7.5 | I completely forgot what i did in this update lmao"),
                         
                     ]
                 )
