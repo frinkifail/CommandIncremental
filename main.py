@@ -480,11 +480,12 @@ def main(page: ft.Page):
     
     ############ LOGIN #################
     def handleLogin(e):
-        global signed_up
+        global signed_up, logged_in
         if log_key_tf.value:
             if log_password_tf.value == db[log_key_tf.value]["password"]:
                 print("Correct password!")
                 if not signed_up: signed_up = True
+                if not logged_in: logged_in = True
     def handleSignup(e) -> None:
         global signed_up
         if log_key_tf.value:
@@ -568,7 +569,7 @@ def main(page: ft.Page):
                     ft.Text("CommandIncremental | Login", style=ft.TextThemeStyle.DISPLAY_SMALL),
                     log_key_tf,
                     log_password_tf,
-                    log_done_btn
+                    ft.Row([log_done_btn, ft.OutlinedButton("Start!", on_click=lambda _: page.go("/"))])
                 ])
             )
         elif page.route == "/signup":
