@@ -5,7 +5,7 @@ import json
 import time
 from threading import Thread
 import flet as ft
-import math
+import keyboard
 
 print("[ParentThread/Main => Parent] Server Started!")
 try:
@@ -65,6 +65,8 @@ force_allow_no_login: bool = True
 logged_in: bool = False
 key: str = ""
 
+quitall: bool = False
+
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
         super().__init__()
@@ -86,6 +88,16 @@ class Advancement(ft.UserControl):
             except: print("[ParentThread/Advancement => Remove] Couldn't remove checkmark!")
     def complete(self): self.completed = True
     def uncomplete(self): self.completed = False
+
+def quitAll():
+    global quitall
+    if quitall:
+        quitall = False
+        print("[ParentThread/QuitAll => Main] Switched quitall to False")
+    else:
+        quitall = True
+        print("[ParentThread/QuitAll => Main] Switched quitall to True")
+        
 
 def setSilicon(count: float):
     global silicon
@@ -734,6 +746,8 @@ def main(page: ft.Page):
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
+        if quitall:
+            quit()
         # global buymax
         # starttime = time.time()
         if notatecheckbox.value:
@@ -849,6 +863,7 @@ def interactableConsole():
 
 
 if __name__ == "__main__":
+    keyboard.add_hotkey("c", )
     updateThread = Thread(target=update)
     updateThread.start()
     loadPlugins()
