@@ -401,6 +401,9 @@ def main(page: ft.Page):
                 os.system("killall python3")
                 os.system("pkill python3")
             console_lastcmd = ctbv
+        elif ctbv == "quit":
+            view1add(ft.Text("[Main/Console => Quit] Quitting all..."))
+            quitAll()
         elif ctbv == "get-silicon" or ctbv == "gs":
             page.views[1].controls.append(ft.Text(f"[Main/Console => GetSilicon] Silicon Count Is: {silicon}"))
             page.views[1].update()
