@@ -863,7 +863,7 @@ def interactableConsole():
 
 
 if __name__ == "__main__":
-    keyboard.add_hotkey("c", )
+    keyboard.add_hotkey("q", quitAll)
     updateThread = Thread(target=update)
     updateThread.start()
     loadPlugins()
