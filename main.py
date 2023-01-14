@@ -686,6 +686,7 @@ def main(page: ft.Page):
                     ]
                 )
             )
+            page.views[1].scroll = ft.ScrollMode.ADAPTIVE
         elif page.route == "/console":
             page.views.append(ft.View(
                 "/console", [
