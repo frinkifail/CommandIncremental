@@ -866,7 +866,8 @@ def interactableConsole():
 
 
 if __name__ == "__main__":
-    keyboard.add_hotkey("q", quitAll)
+    try: keyboard.add_hotkey("q", quitAll)
+    except ImportError: print("[ParentThread => Imports] couldn't import keyboard, assuming not rooted on linux!")
     updateThread = Thread(target=update)
     updateThread.start()
     loadPlugins()
