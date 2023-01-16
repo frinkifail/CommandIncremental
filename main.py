@@ -92,6 +92,16 @@ class Advancement(ft.UserControl):
     def complete(self): self.completed = True
     def uncomplete(self): self.completed = False
 
+def quitAll():
+    global quitall
+    if quitall:
+        quitall = False
+        print("[ParentThread/QuitAll => Main] Switched quitall to False")
+    else:
+        quitall = True
+        print("[ParentThread/QuitAll => Main] Switched quitall to True")
+        
+
 def setSilicon(count: float):
     global silicon
     print(f"[ParentThread/PluginHelper => SetSilicon] Old Silicon Count: {silicon}")
@@ -395,6 +405,9 @@ def main(page: ft.Page) -> NoReturn:
                 os.system("killall python3")
                 os.system("pkill python3")
             console_lastcmd = ctbv
+        elif ctbv == "quit":
+            view1add(ft.Text("[Main/Console => Quit] Quitting all..."))
+            quitAll()
         elif ctbv == "get-silicon" or ctbv == "gs":
             page.views[1].controls.append(ft.Text(f"[Main/Console => GetSilicon] Silicon Count Is: {silicon}"))
             page.views[1].update()
@@ -698,6 +711,7 @@ def main(page: ft.Page) -> NoReturn:
                     ]
                 )
             )
+            page.views[1].scroll = ft.ScrollMode.ADAPTIVE
         elif page.route == "/console":
             page.views.append(ft.View(
                 "/console", [
@@ -745,6 +759,8 @@ def main(page: ft.Page) -> NoReturn:
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content
     while True:
+        if quitall:
+            quit()
         # global buymax
         # starttime = time.time()
         if notatecheckbox.value:
@@ -860,6 +876,8 @@ def interactableConsole():
 
 
 if __name__ == "__main__":
+    try: keyboard.add_hotkey("q", quitAll)
+    except ImportError: print("[ParentThread => Imports] couldn't import keyboard, assuming not rooted on linux!")
     updateThread = Thread(target=update)
     updateThread.start()
     loadPlugins()
