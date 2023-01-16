@@ -1,17 +1,20 @@
 import os
+from subprocess import Popen
 import sys
 import notificationFlet as ftn
 import json
 import time
 from threading import Thread
 import flet as ft
-import math
+import logging
+# logging.basicConfig(level=logging.DEBUG)
 
 print("[ParentThread/Main => Parent] Server Started!")
 try:
     from replit import db
-except ImportError:
+except ImportError as e:
     print("[ParentThread => Imports] unable to import database from replit, assuming running custom server")
+    print(e.with_traceback(None))
 # import math
 
 sys.path.append("plugins/API")
@@ -64,6 +67,8 @@ signed_up: bool = False
 force_allow_no_login: bool = True
 logged_in: bool = False
 key: str = ""
+
+documentation_open: bool = False # Documentation open in this server session?
 
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
@@ -150,7 +155,7 @@ def loadPlugins():
         os.chdir("..")
 
 
-def main(page: ft.Page):
+def main(page: ft.Page) -> NoReturn:
     global buymax
     page.title = "CommandIncremental"
     page.theme_mode = ft.ThemeMode.DARK
@@ -184,6 +189,7 @@ def main(page: ft.Page):
     def handleNewSave(e) -> None:
         global key
         if saveenabled:
+            
             db[key]["silicon"] = silicon
             db[key]["siliconperspec"] = siliconperspec
             db[key]["gen1"] = gen1
@@ -626,6 +632,11 @@ def main(page: ft.Page):
             adv_newcomer.if_completed()
             adv_firstgen.if_completed()
         elif page.route == "/debug":
+            global documentation_open
+            if not documentation_open: Popen(["python3.9","docs/no_run_scripts/main.py"])
+            else: print("[MainThread/Debug => Documentation] Documentation already open (Server)!")
+            documentation_open = True
+            page.scroll = ft.ScrollMode.ALWAYS
             page.views.append(
                 ft.View(
                     "/debug", [
@@ -683,6 +694,7 @@ def main(page: ft.Page):
                         ft.Text("1.7.6 | Fix not being able to signup"),
                         ft.Text("1.7.7 | Fix not being able to signup again..."),
                         
+                        ft.FletApp("http://localhost:8011")
                     ]
                 )
             )
@@ -859,4 +871,7 @@ if __name__ == "__main__":
     # consoleThread.start()
     # appThread = Thread(target=lambda: ft.app(target=main, port=8000, view=ft.WEB_BROWSER))
     # appThread.start()
-    ft.app(target=main, port=8000, view=ft.WEB_BROWSER, route_url_strategy="path", assets_dir="assets")
+    if os.name == "posix":
+        ft.app(target=main, port=8000, view=ft.FLET_APP, route_url_strategy="path", assets_dir="assets")
+    else:
+        ft.app(target=main, port=8000, view=ft.WEB_BROWSER, route_url_strategy="path", assets_dir="assets")
