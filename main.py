@@ -7,7 +7,8 @@ import time
 from threading import Thread
 import flet as ft
 import logging
-import keyboard
+try: import keyboard
+except: print("keyboard gone")
 # logging.basicConfig(level=logging.DEBUG)
 
 print("[ParentThread/Main => Parent] Server Started!")
@@ -22,7 +23,7 @@ sys.path.append("plugins/API")
 import bindings
 from typing import *
 
-silicon: float = 10
+silicon: float = 0 # limit at 1e+308 :cry:
 siliconperspec: float = 0.108
 maxsilicon: float = 15
 maxsiliconcost: float = 10
@@ -31,10 +32,9 @@ siliconmultipliercost: float = 365
 displaysiliconunit: str = bindings.displayunit
 displaysiliconunit2: str = bindings.displayunit2
 
-money: float = 0
-moneyperspec: float = 0
-maxmoney: float = 1e307
-moneymultiplier: float = 1
+money: int = 10
+moneyperspec: int = 0
+moneymultiplier: int = 1
 displaymoneyunit: str = bindings.moneydisplayunit
 displaymoneyunit2: str = bindings.moneydisplayunit2
 
@@ -184,10 +184,10 @@ def main(page: ft.Page) -> NoReturn:
     # buymax = False
 
     def buygen1(e):
-        global silicon, gen1, siliconperspec
-        if silicon >= gen1["cost"]:
-            # silicon -= gen1["cost"]
-            page.client_storage.set("silicon", page.client_storage.get("silicon")-gen1["cost"])
+        global money, gen1, siliconperspec
+        if money >= gen1["cost"]:
+            money -= gen1["cost"]
+            # page.client_storage.set("silicon", page.client_storage.get("silicon")-gen1["cost"])
             gen1["cost"] *= gen1["growth"]
             gen1["amount"] += 1
             siliconperspec += 0.18
@@ -199,6 +199,15 @@ def main(page: ft.Page) -> NoReturn:
             print("[MainThread/Generators => 1] bought!")
         else:
             print("[MainThread/Generators => 1] not enough silicon")
+            
+    def handleSellSilicon(e):
+        if silicon < 1:
+            print("[MainThread/HandleSellSilicon => If?] Not enough!")
+        elif silicon > 1:
+            for i in range(silicon.__floor__()):
+                if silicon > 1: silicon -= 1; money += 10
+                else: continue
+                
 
     def handleNewSave(e) -> None:
         global key
@@ -288,9 +297,9 @@ def main(page: ft.Page) -> NoReturn:
         print("[MainThread/Handler => Updater] Changed update interval!")
 
     def handleUpgradeMax(e):
-        global maxsilicon, maxsiliconcost, silicon
-        if silicon >= maxsiliconcost:
-            silicon -= maxsiliconcost
+        global maxsilicon, maxsiliconcost, money
+        if money >= maxsiliconcost:
+            money -= maxsiliconcost
             maxsiliconcost *= 1.41
             maxsilicon *= 1.38
             # ahhhh im so stupid
@@ -301,9 +310,9 @@ def main(page: ft.Page) -> NoReturn:
                 "[MainThread/Upgrades => MaxSilicon] Not enough silicon to upgrade this!")
 
     def handleUpgradeMultiplier(e):
-        global silicon, siliconmultipliercost, siliconmultiplier
-        if silicon >= siliconmultipliercost:
-            silicon -= siliconmultipliercost
+        global money, siliconmultipliercost, siliconmultiplier
+        if money >= siliconmultipliercost:
+            money -= siliconmultipliercost
             siliconmultipliercost *= 1.69
             siliconmultiplier += 1.5
             upgrades_siliconmultiplier.text = f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]"
@@ -314,10 +323,10 @@ def main(page: ft.Page) -> NoReturn:
                 "[MainThread/Upgrades => Multiplier] Not enough silicon to upgrade this!")
 
     def handleUpgradeGenWaitTime(e):
-        global silicon, silicongenwaittime, silicongenwaittimecost
+        global money, silicongenwaittime, silicongenwaittimecost
         if silicongenwaittime > 0.02:
-            if silicon >= silicongenwaittimecost:
-                silicon -= silicongenwaittimecost
+            if money >= silicongenwaittimecost:
+                money -= silicongenwaittimecost
                 silicongenwaittimecost *= 1.80
                 silicongenwaittime -= 0.01
                 upgrades_waittime.text = f"Generation Time [{silicongenwaittime}] | Cost: [{silicongenwaittimecost}]"
@@ -562,10 +571,10 @@ def main(page: ft.Page) -> NoReturn:
                     siliconcounter, moneydisplay, buygen1button,
                     buymaxbtn,
                     adv_gainnoti[0],
-                    manualboost
+                    ft.FloatingActionButton("Sell", icon=ft.icons.MONEY, on_click=handleSellSilicon)
                     # ft.ElevatedButton("Goto Test", on_click=lambda _: page.go("/test"))
-                ]
-            )
+                ],
+            floating_action_button=manualboost)
         )
         if page.route == "/test":
             page.views.append(
@@ -883,7 +892,7 @@ def interactableConsole():
 
 if __name__ == "__main__":
     try: keyboard.add_hotkey("q", quitAll)
-    except ImportError: print("[ParentThread => Imports] couldn't import keyboard, assuming not rooted on linux!")
+    except Exception: print("[ParentThread => Imports] couldn't import keyboard, assuming not rooted on linux!")
     updateThread = Thread(target=update)
     updateThread.start()
     loadPlugins()
