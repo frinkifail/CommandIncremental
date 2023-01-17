@@ -186,7 +186,8 @@ def main(page: ft.Page) -> NoReturn:
     def buygen1(e):
         global silicon, gen1, siliconperspec
         if silicon >= gen1["cost"]:
-            silicon -= gen1["cost"]
+            # silicon -= gen1["cost"]
+            page.client_storage.set("silicon", page.client_storage.get("silicon")-gen1["cost"])
             gen1["cost"] *= gen1["growth"]
             gen1["amount"] += 1
             siliconperspec += 0.18
