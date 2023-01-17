@@ -69,6 +69,8 @@ force_allow_no_login: bool = True
 logged_in: bool = False
 key: str = ""
 
+quitall = False
+
 documentation_open: bool = False # Documentation open in this server session?
 
 class Advancement(ft.UserControl):
@@ -758,7 +760,7 @@ def main(page: ft.Page) -> NoReturn:
     else:
         print("[MainThread/PageGo => SignedUpChecker] Detected signed up is unknown!")
 
-    global pluginwantstoaddpage, pluginwantstoaddpage_content
+    global pluginwantstoaddpage, pluginwantstoaddpage_content, quitall
     while True:
         if quitall:
             quit()
