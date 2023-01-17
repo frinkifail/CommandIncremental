@@ -782,7 +782,7 @@ def main(page: ft.Page) -> NoReturn:
             notate = False
         if notate:
             siliconcounter.value = "{:e} {0} | ".format(
-                page.client_storage.get("silicon"), displaysiliconunit) + str(
+                silicon, displaysiliconunit) + str(
                 "{:e.3f}".format(siliconperspec)) + f" {displaysiliconunit} per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic {0} Factory (" + "{:e}".format(
                 gen1['amount'], displaysiliconunit2) + ") | Cost: {:e}☼".format(gen1['cost'])
@@ -827,7 +827,7 @@ def main(page: ft.Page) -> NoReturn:
             time.sleep(0.1)
             pluginwantstoaddpage = False
             print("[MainThread/PluginHelper => AddContentToPage] Plugin wants to add page!")
-        page.client_storage.set("silicon", silicon)
+        # page.client_storage.set("silicon", silicon)
 
 
 def update():
