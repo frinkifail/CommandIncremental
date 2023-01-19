@@ -46,7 +46,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.8.1"  # forgor to bump version
+version: str = "1.8.2"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -194,13 +194,17 @@ def main(page: ft.Page) -> NoReturn:
     # buymax = False
     def handleBuyHouse(e) -> None:
         global money
+        log.debug("Handle buy house triggered!")
         houses[0]["growth"] = random.randint(300, 2800)
         bc: int = houses[0]["base_cost"]
         gr: int = houses[0]["growth"]
         bc += gr
-        if money < bc:
+        if money > bc:
+            log.info("enough to buy house")
             money -= bc
             houses.append({"name":random.choice(available_names), "cost":bc, "generatable":random.randint(50,2900)})
+        else:
+            log.info("not enough to buy house!!")
             
 
     def buygen1(e) -> None:
@@ -649,7 +653,7 @@ def main(page: ft.Page) -> NoReturn:
                 ft.View(
                     "/upgrades", [
                         ft.AppBar(title=ft.Text(
-                            "CommandIncremental | Upgrades")),
+                            "CommandIncremental | Upgrades"),actions=[ft.IconButton(ft.icons.HOME, on_click=lambda _: page.go("/upgrades/housing"), tooltip="Housing")]),
                         ft.Column([
                             ft.Divider(height=3, thickness=3),
                             upgrades_max,
@@ -684,8 +688,8 @@ def main(page: ft.Page) -> NoReturn:
                 ft.View(
                     "/debug", [
                         ft.AppBar(title=ft.Text(
-                            "CommandIncremental | Debug Utilities"), actions=[ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"),
-                                                     tooltip="Installed Plugins"),ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"),
+                            "CommandIncremental | Debug Utilities"), actions=[ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/debug/plugins"),
+                                                     tooltip="Installed Plugins"),ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/debug/console"),
                                                      tooltip="In-app Console")]),
                         ft.Row([debugsilicontf, ft.IconButton(
                             ft.icons.CHECK, on_click=handleDebugPts, tooltip="get yo silicons!!")]),
@@ -746,14 +750,14 @@ def main(page: ft.Page) -> NoReturn:
                 )
             )
             page.views[1].scroll = ft.ScrollMode.ADAPTIVE
-        elif page.route == "/console":
+        elif page.route == "/debug/console":
             page.views.append(ft.View(
-                "/console", [
+                "/debug/console", [
                     ft.AppBar(title=ft.Text("CommandIncremental | Console")),
                     ft.Row([consoleTextBox, ft.IconButton(ft.icons.START, on_click=handleConsoleCommand)])
                 ]
             ))
-        elif page.route == "/plugins":
+        elif page.route == "/debug/plugins":
             global plugins, pluginvers, pluginnames, plugindescs
             plugincol = ft.Column()
             for i in range(pluginnames.__len__()):
@@ -764,11 +768,26 @@ def main(page: ft.Page) -> NoReturn:
                 plugincol.controls.append(ft.Divider(height=3, thickness=3))
 
             page.views.append(ft.View(
-                "/plugins", [
+                "/debug/plugins", [
                     ft.AppBar(title=ft.Text("CommandIncremental | Installed/Loaded Plugins")),
                     plugincol
                 ]
             ))
+        elif page.route == "/upgrades/housing":
+            house_col = ft.Column()
+            try:
+                for i in houses:
+                    house_col.controls.append(ft.Column([
+                        ft.Text(i["name"], style=ft.TextThemeStyle.TITLE_LARGE),
+                        ft.Text("This house is generating "+str(i["generatable"]), style=ft.TextThemeStyle.BODY_MEDIUM)
+                    ]))
+            except KeyError:
+                log.error("No houses available!")
+            page.views.append(ft.View("/upgrades/housing",[
+                ft.AppBar(title=ft.Text("CommandIncremental | Housing")),
+                ft.FloatingActionButton("Buy House", icon=ft.icons.HOME, on_click=handleBuyHouse),
+                house_col
+            ]))
         page.update()
 
     def view_pop(view):
