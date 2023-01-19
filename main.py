@@ -6,7 +6,7 @@ import json
 import time
 from threading import Thread
 import flet as ft
-import logging
+import random
 try: import keyboard
 except: print("keyboard gone")
 # logging.basicConfig(level=logging.DEBUG)
@@ -73,11 +73,11 @@ quitall = False
 
 documentation_open: bool = False # Documentation open in this server session?
 
-houses = []
+houses: list[dict] = [{"base_cost":1200, "growth":2}]
 
 
 class Advancement(ft.UserControl):
-    def __init__(self, title: str, description: str, icon: ft.Icon):
+    def __init__(self, title: str, description: str, icon: ft.Icon) -> None:
         super().__init__()
         self.title: str = title
         self.desc: str = description
@@ -185,8 +185,10 @@ def main(page: ft.Page) -> NoReturn:
     # debugsiliconnotiinuse = False
     # fuckerinas it doesn't work!
     # buymax = False
+    def handleBuyHouse(e) -> None:
+        houses.append()
 
-    def buygen1(e):
+    def buygen1(e) -> None:
         global money, gen1, siliconperspec
         if money >= gen1["cost"]:
             money -= gen1["cost"]
@@ -563,10 +565,6 @@ def main(page: ft.Page) -> NoReturn:
                                   ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="Upgrades"),
                                        ft.IconButton(ft.icons.BUG_REPORT, on_click=lambda _: page.go("/debug"),
                                                      tooltip="Some debug utilities"),
-                                       ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"),
-                                                     tooltip="In-app Console"),
-                                       ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"),
-                                                     tooltip="Installed Plugins"),
                                        ft.IconButton(ft.icons.ABC, on_click=lambda _: page.go("/advancements"),
                                                      tooltip="Advancements")]),
                     ft.Text("Not logged in!", tooltip="log in to get rid of this message", text_align=ft.TextAlign.CENTER, style=ft.TextThemeStyle.BODY_LARGE) if not logged_in else ft.Text(),
@@ -671,7 +669,9 @@ def main(page: ft.Page) -> NoReturn:
                 ft.View(
                     "/debug", [
                         ft.AppBar(title=ft.Text(
-                            "CommandIncremental | Debug Utilities")),
+                            "CommandIncremental | Debug Utilities"), actions=[ft.IconButton(ft.icons.BUILD, on_click=lambda _: page.go("/plugins"),
+                                                     tooltip="Installed Plugins"),ft.IconButton(ft.icons.CODE, on_click=lambda _: page.go("/console"),
+                                                     tooltip="In-app Console")]),
                         ft.Row([debugsilicontf, ft.IconButton(
                             ft.icons.CHECK, on_click=handleDebugPts, tooltip="get yo silicons!!")]),
                         ft.TextButton("Infinite Silicon", on_click=handleInfSilicon,
@@ -790,7 +790,7 @@ def main(page: ft.Page) -> NoReturn:
                 silicon, displaysiliconunit) + str(
                 "{:e.3f}".format(siliconperspec)) + f" {displaysiliconunit} per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic {0} Factory (" + "{:e}".format(
-                gen1['amount'], displaysiliconunit2) + ") | Cost: {:e}☼".format(gen1['cost'])
+                gen1['amount'], displaysiliconunit2) + ") | Cost: {:e}§".format(gen1['cost'])
             moneydisplay.value = "{:e} {0} | ".format(money, displaymoneyunit) + str(
                 "{:e.3f}".format(moneyperspec)) + f" {displaymoneyunit} per {silicongenwaittime} sec"
         else:
@@ -798,7 +798,7 @@ def main(page: ft.Page) -> NoReturn:
                 silicon, displaysiliconunit) + str(
                 "{:.3f}".format(siliconperspec)) + f" {displaysiliconunit} per {silicongenwaittime} sec"
             buygen1button.text = "Buy Basic {} Factory (".format(displaysiliconunit2) + "{}".format(
-                gen1['amount']) + ") | Cost: {}☼".format(gen1['cost'])
+                gen1['amount']) + ") | Cost: {}§".format(gen1['cost'])
             moneydisplay.value = "{0} {1} | ".format(money, displaymoneyunit) + str(
                 "{:.3f}".format(moneyperspec)) + f" {displaymoneyunit} per {silicongenwaittime} sec"
 
