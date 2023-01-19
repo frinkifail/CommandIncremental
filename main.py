@@ -46,7 +46,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.8"  # forgor to bump version
+version: str = "1.8.1"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -739,7 +739,8 @@ def main(page: ft.Page) -> NoReturn:
                         ft.Text("1.7.6 | Fix not being able to signup"),
                         ft.Text("1.7.7 | Fix not being able to signup again..."),
                         ft.Text("1.8 | Advancements + Documentation"),
-                        ft.Text("1.8 | Please don't complain that I keep forgetting to bump the version!")
+                        ft.Text("1.8 | Please don't complain that I keep forgetting to bump the version!"),
+                        ft.Text("1.8.1 | Colorful logging!!")
                         # ft.FletApp("http://localhost:8011")
                     ]
                 )
