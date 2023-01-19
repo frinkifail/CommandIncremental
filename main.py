@@ -7,16 +7,16 @@ import time
 from threading import Thread
 import flet as ft
 import random
+import logging_v2 as log
 try: import keyboard
-except: print("keyboard gone")
+except: log.error("keyboard gone")
 # logging.basicConfig(level=logging.DEBUG)
 
-print("[ParentThread/Main => Parent] Server Started!")
+log.info("[ParentThread/Main => Parent] Server Started!")
 try:
     from replit import db
 except ImportError as e:
-    print("[ParentThread => Imports] unable to import database from replit, assuming running custom server")
-    print(e.with_traceback(None))
+    log.warn("[ParentThread => Imports] unable to import database from replit, assuming running custom server",e)
 # import math
 
 sys.path.append("plugins/API")
@@ -73,7 +73,7 @@ quitall = False
 
 documentation_open: bool = False # Documentation open in this server session?
 
-houses: list[dict] = [{"base_cost":1200, "growth":2}]
+houses: list[dict] = [{"base_cost":1200, "growth":random.randint(300, 2800)}]
 
 
 class Advancement(ft.UserControl):
@@ -94,7 +94,7 @@ class Advancement(ft.UserControl):
             self.already_completed = True
         else:
             try: self.maincontainer.content.controls[0].controls.remove(self.checkmark)
-            except: print("[ParentThread/Advancement => Remove] Couldn't remove checkmark!")
+            except: log.warn("[ParentThread/Advancement => Remove] Couldn't remove checkmark!")
     def complete(self): self.completed = True
     def uncomplete(self): self.completed = False
 
@@ -102,25 +102,25 @@ def quitAll():
     global quitall
     if quitall:
         quitall = False
-        print("[ParentThread/QuitAll => Main] Switched quitall to False")
+        log.info("[ParentThread/QuitAll => Main] Switched quitall to False")
     else:
         quitall = True
-        print("[ParentThread/QuitAll => Main] Switched quitall to True")
+        log.info("[ParentThread/QuitAll => Main] Switched quitall to True")
         
 
 def setSilicon(count: float):
     global silicon
-    print(f"[ParentThread/PluginHelper => SetSilicon] Old Silicon Count: {silicon}")
+    log.debug(f"[ParentThread/PluginHelper => SetSilicon] Old Silicon Count: {silicon}")
     silicon = count
-    print("[ParentThread/PluginHelper => SetSilicon] Set silicon done!")
-    print(f"[ParentThread/PluginHelper => SetSilicon] New Silicon Count: {silicon}")
+    log.info("[ParentThread/PluginHelper => SetSilicon] Set silicon done!")
+    log.debug(f"[ParentThread/PluginHelper => SetSilicon] New Silicon Count: {silicon}")
 
 
 def addToPage(content):
     global pluginwantstoaddpage_content, pluginwantstoaddpage
     pluginwantstoaddpage = True
     pluginwantstoaddpage_content = content
-    print(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!")  # nooooooooooo idk how to make thissss
+    log.info(f"[ParentThread/PluginHelper => AddContentToPage] Added {content}!")  # nooooooooooo idk how to make thissss
 
 
 def loadPlugins():
@@ -141,7 +141,7 @@ def loadPlugins():
     plugins.remove("API")
     scriptfiles = []
     # print(["Hi", "API"].remove("API"))
-    print("[ParentThread/PluginLoader => PluginChecker] Available plugins: " + str(plugins))
+    log.info("[ParentThread/PluginLoader => PluginChecker] Available plugins: " + str(plugins))
     
     for i in range(plugins.__len__()):
         try:
@@ -164,12 +164,19 @@ def loadPlugins():
                         pluginscriptfiles = os.listdir(".")
                         executePlugins()
                     else:
-                        print(
+                        log.warn(
                             "[ParentThread/PluginLoader => ScriptChecker] No scripts available, loading only metadata")
         else:
-            print("[ParentThread/PluginLoader => MetaChecker] Plugin disabled in meta, not counting")
+            log.info("[ParentThread/PluginLoader => MetaChecker] Plugin disabled in meta, not counting")
         os.chdir("..")
 
+available_names: list[str] = [
+    "Hello World",
+    "Unwelcomed",
+    "Welcomed?",
+    "Weirdly",
+    "Pocosticks"
+]
 
 def main(page: ft.Page) -> NoReturn:
     global buymax
@@ -186,7 +193,15 @@ def main(page: ft.Page) -> NoReturn:
     # fuckerinas it doesn't work!
     # buymax = False
     def handleBuyHouse(e) -> None:
-        houses.append()
+        global money
+        houses[0]["growth"] = random.randint(300, 2800)
+        bc: int = houses[0]["base_cost"]
+        gr: int = houses[0]["growth"]
+        bc += gr
+        if money < bc:
+            money -= bc
+            houses.append({"name":random.choice(available_names), "cost":bc, "generatable":random.randint(50,2900)})
+            
 
     def buygen1(e) -> None:
         global money, gen1, siliconperspec
@@ -201,18 +216,18 @@ def main(page: ft.Page) -> NoReturn:
                 pass
             else:
                 adv_gainnoti[3](None)
-            print("[MainThread/Generators => 1] bought!")
+            log.info("[MainThread/Generators => 1] bought!")
         else:
-            print("[MainThread/Generators => 1] not enough silicon")
+            log.info("[MainThread/Generators => 1] not enough silicon")
             
     def handleSellSilicon(e):
         global silicon, money
         if silicon < 1:
-            print("[MainThread/HandleSellSilicon => If?] Not enough!")
+            log.info("[MainThread/HandleSellSilicon => If?] Not enough!")
         elif silicon > 1:
             for i in range(silicon.__floor__()):
                 if silicon > 1: silicon -= 1; money += 0.7
-                else: print("[MainThread/HandleSellSilicon => If?] Enough but also not?"); continue
+                else: log.warn("[MainThread/HandleSellSilicon => If?] Enough but also not?"); continue
                 
 
     def handleNewSave(e) -> None:
@@ -227,9 +242,9 @@ def main(page: ft.Page) -> NoReturn:
             db[key]["silicongwt_c"] = silicongenwaittimecost
             db[key]["siliconmul"] = siliconmultiplier
             db[key]["siliconmul_c"] = siliconmultipliercost
-            print('[MainThread/Handler => Save] Statistics Saved!')
+            log.info('[MainThread/Handler => Save] Statistics Saved!')
         else:
-            print(
+            log.warn(
                 '[MainThread/Handler => Save] Failed to save: Saving/Loading is disabled')
 
     def handleNewLoad(e):
@@ -244,9 +259,9 @@ def main(page: ft.Page) -> NoReturn:
             silicongenwaittimecost = db[key]["silicongwt_c"]
             siliconmultiplier = db[key]["siliconmul"]
             siliconmultipliercost = db[key]["siliconmul_c"]
-            print('[MainThread/Handler => Load] Statistics Loaded!')
+            log.info('[MainThread/Handler => Load] Statistics Loaded!')
         else:
-            print(
+            log.warn(
                 '[MainThread/Handler => Load] Failed to load: Saving/Loading is disabled')
 
     def handleDebugPts(e):
@@ -254,7 +269,7 @@ def main(page: ft.Page) -> NoReturn:
         try:
             if debugsilicontf.value != '':
                 silicon = int(debugsilicontf.value)
-                print(
+                log.info(
                     f"[MainThread/Debug => SetSilicon] Set Silicon Count to {0}".format(int(debugsilicontf.value)))
                 if not debugsiliconnotiinuse:
                     debugsiliconnotiinuse = True
@@ -267,17 +282,17 @@ def main(page: ft.Page) -> NoReturn:
                     page.views[1].controls.pop()
                     debugsiliconnotiinuse = False
                 else:
-                    print(
+                    log.warn(
                         "[MainThread/Debug => Notifications] Notification Animation is playing, won't play "
                         "overlapping animation")
             else:
-                print(
+                log.warn(
                     "[MainThread/Debug => SetSilicon] Set Silicon Text Field's value is invalid, won't set to that...")
             saveenabled = False
-            print(
+            log.info(
                 "[MainThread/Handler => SaveHandle] Disabled saving, debug silicon handle is called")
         except Exception:  # ugh it doesn't catch because threads fucking suck
-            print(
+            log.warn(
                 "[MainThread/Debug => Notification] wow, thats funny, see, the user switched views before i could "
                 "remove the notification, in conclusion, fuck you")
 
@@ -300,7 +315,7 @@ def main(page: ft.Page) -> NoReturn:
     def handleUpdateInterval(e):
         global updateinterval
         updateinterval = float(updateintervaltf.value)
-        print("[MainThread/Handler => Updater] Changed update interval!")
+        log.info("[MainThread/Handler => Updater] Changed update interval!")
 
     def handleUpgradeMax(e):
         global maxsilicon, maxsiliconcost, money
@@ -310,9 +325,9 @@ def main(page: ft.Page) -> NoReturn:
             maxsilicon *= 1.38
             # ahhhh im so stupid
             upgrades_max.text = f"Max Silicon [{maxsilicon}] | Cost: [{maxsiliconcost}]"
-            print("[MainThread/Upgrades => MaxSilicon] Upgraded this upgrade!")
+            log.info("[MainThread/Upgrades => MaxSilicon] Upgraded this upgrade!")
         else:
-            print(
+            log.info(
                 "[MainThread/Upgrades => MaxSilicon] Not enough silicon to upgrade this!")
 
     def handleUpgradeMultiplier(e):
@@ -323,9 +338,9 @@ def main(page: ft.Page) -> NoReturn:
             siliconmultiplier += 1.5
             upgrades_siliconmultiplier.text = f"Silicon Multiplier [{siliconmultiplier}] | Cost: [{siliconmultipliercost}]"
             upgrades_siliconmultiplier.tooltip = f"Gain more silicon per {silicongenwaittime} seconds"
-            print("[MainThread/Upgrades => Multiplier] Upgraded this upgrade!")
+            log.info("[MainThread/Upgrades => Multiplier] Upgraded this upgrade!")
         else:
-            print(
+            log.info(
                 "[MainThread/Upgrades => Multiplier] Not enough silicon to upgrade this!")
 
     def handleUpgradeGenWaitTime(e):
@@ -336,12 +351,12 @@ def main(page: ft.Page) -> NoReturn:
                 silicongenwaittimecost *= 1.80
                 silicongenwaittime -= 0.01
                 upgrades_waittime.text = f"Generation Time [{silicongenwaittime}] | Cost: [{silicongenwaittimecost}]"
-                print("[MainThread/Upgrades => WaitTime] Upgraded this upgrade!")
+                log.info("[MainThread/Upgrades => WaitTime] Upgraded this upgrade!")
             else:
-                print(
+                log.info(
                     "[MainThread/Upgrades => WaitTime] Not enough silicon to upgrade this!")
         else:
-            print("[MainThread/Upgrades => WaitTime] Reached Max Upgrade!")
+            log.info("[MainThread/Upgrades => WaitTime] Reached Max Upgrade!")
 
     def handleDarkThemeChange(e):
         if darktheme.value:
@@ -523,7 +538,7 @@ def main(page: ft.Page) -> NoReturn:
         global signed_up, logged_in, key
         if log_key_tf.value:
             if log_password_tf.value == db[log_key_tf.value]["password"]:
-                print("Correct password!")
+                log.info("Correct password!")
                 if not signed_up: signed_up = True
                 if not logged_in: logged_in = True
                 key = log_key_tf.value
@@ -531,15 +546,15 @@ def main(page: ft.Page) -> NoReturn:
         global signed_up
         if log_key_tf.value:
             if log_password_tf.value:
-                print("[MainThread/Login/Signup => Signuper] Signup functionn triggered (All the values are filled)")
+                log.debug("[MainThread/Login/Signup => Signuper] Signup function triggered (All the values are filled)")
                 try:
-                    if db[log_key_tf.value]: print("[MainThread/Login/Signup => AlreadyRegistered] Cannot continue!"); view1add(ft.Text("Failed to signup: Invalid key")); return;
+                    if db[log_key_tf.value]: log.warn("[MainThread/Login/Signup => AlreadyRegistered] Cannot continue!"); view1add(ft.Text("Failed to signup: Invalid key")); return;
                 except:
                     pass
                 db[log_key_tf.value] = {}
                 db[log_key_tf.value]["key"] = log_key_tf.value
                 db[log_key_tf.value]["password"] = log_password_tf.value
-                if not signed_up: signed_up = True; print("[MainThread/Login/Signup => SignupChanger] Changed signed_up! ({})".format(signed_up))
+                if not signed_up: signed_up = True; log.debug("[MainThread/Login/Signup => SignupChanger] Changed signed_up! ({})".format(signed_up))
     log_key_tf: ft.TextField = ft.TextField(label="Key")
     log_password_tf: ft.TextField = ft.TextField(label="Password", password=True)
     log_done_btn: ft.IconButton = ft.IconButton(ft.icons.CHECK, on_click=handleLogin)
@@ -662,7 +677,7 @@ def main(page: ft.Page) -> NoReturn:
         elif page.route == "/debug":
             global documentation_open
             if not documentation_open: Popen(["python3.9","docs/engine/loader.py"])
-            else: print("[MainThread/Debug => Documentation] Documentation already open (Server)!")
+            else: log.warn("[MainThread/Debug => Documentation] Documentation already open (Server)!")
             documentation_open = True
             page.scroll = ft.ScrollMode.ALWAYS
             page.views.append(
@@ -765,15 +780,15 @@ def main(page: ft.Page) -> NoReturn:
     page.on_view_pop = view_pop
     if signed_up:
         page.go("/login")
-        print("[MainThread/PageGo => SignedUpChecker] Detected is signed up!")
+        log.debug("[MainThread/PageGo => SignedUpChecker] Detected is signed up!")
     elif not signed_up:
         page.go("/signup")
-        print("[MainThread/PageGo => SignedUpChecker] Detected not signed up!")
+        log.debug("[MainThread/PageGo => SignedUpChecker] Detected not signed up!")
     elif logged_in:
         page.go("/")
-        print("[MainThread/PageGo => SignedUpChecker] Detected logged in!")
+        log.debug("[MainThread/PageGo => SignedUpChecker] Detected logged in!")
     else:
-        print("[MainThread/PageGo => SignedUpChecker] Detected signed up is unknown!")
+        log.debug("[MainThread/PageGo => SignedUpChecker] Detected signed up is unknown!")
 
     global pluginwantstoaddpage, pluginwantstoaddpage_content, quitall
     while True:
@@ -831,17 +846,18 @@ def main(page: ft.Page) -> NoReturn:
             page.views[0].update()
             time.sleep(0.1)
             pluginwantstoaddpage = False
-            print("[MainThread/PluginHelper => AddContentToPage] Plugin wants to add page!")
+            log.debug("[MainThread/PluginHelper => AddContentToPage] Plugin wants to add page!")
         # page.client_storage.set("silicon", silicon)
 
 
 def update():
     while True:
-        global silicon, maxsilicon, console_setsiliconval
+        global silicon, maxsilicon, console_setsiliconval, money
         if not silicon > 1e+308:
             if not silicon >= maxsilicon:
                 # if not console_setsiliconval:
                 silicon += siliconperspec * siliconmultiplier
+                money += moneyperspec
                 # else: silicon = console_setsiliconval console_setsiliconval = None # workaround cus console thread
                 # can't set due to being in a different process; simulating it's own main enviroment no actually fuck
                 # this
@@ -851,7 +867,7 @@ def update():
                 # SILENT
                 pass
         else:
-            print(
+            log.warn(
                 "[UpdateThread/Update => InvalidChecker] Silicon value is infinite, either you cheated, or you beat "
                 "the game")
             quit()
@@ -868,17 +884,17 @@ def interactableConsole():
                 switchpage = page_action[11:]
                 # print(switchpage)
                 if switchpage == "main":
-                    print("[Console/Main => SwitchPage] Switched page to Main")
+                    log.debug("[Console/Main => SwitchPage] Switched page to Main")
                     consolepage = "main"
             elif page_action.startswith("set-silicon ") and consolepage == "main":
                 setsilicon = float(page_action[12:])
                 # console_setsiliconval = setsilicon
                 silicon = setsilicon
             elif page_action == "get-silicon":
-                print(
+                log.info(
                     f"[Console/Main => GetSilicon] Current Silicon Count: {silicon}")
             elif page_action == "kill":
-                print(
+                log.error(
                     "[Console/Main => KillWindow] Killing all..."
                 )
                 if os.name == "nt":
@@ -890,14 +906,14 @@ def interactableConsole():
                     os.system("pkill python3")
 
     except Exception as e:
-        print(f"ERROR: {e}")
+        log.error(f"ERROR: {e}")
         input()
     silicon = 0
 
 
 if __name__ == "__main__":
     try: keyboard.add_hotkey("q", quitAll)
-    except Exception: print("[ParentThread => Imports] couldn't import keyboard, assuming not rooted on linux!")
+    except Exception: log.error("[ParentThread => Imports] couldn't import keyboard, assuming not rooted on linux!")
     updateThread = Thread(target=update)
     updateThread.start()
     loadPlugins()
