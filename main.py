@@ -850,7 +850,7 @@ def main(page: ft.Page) -> NoReturn:
         # page.client_storage.set("silicon", silicon)
 
 
-def update():
+def update() -> NoReturn:
     while True:
         global silicon, maxsilicon, console_setsiliconval, money
         if not silicon > 1e+308:
