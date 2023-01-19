@@ -46,7 +46,7 @@ gen1 = {
 buymax: bool = False
 saveenabled: bool = True
 updateinterval: float = 0.0025
-version: str = "1.7.7"  # forgor to bump version
+version: str = "1.8"  # forgor to bump version
 # Other shit used in main function
 debugsiliconnotiinuse: bool = False
 notate: bool = True
@@ -72,6 +72,9 @@ key: str = ""
 quitall = False
 
 documentation_open: bool = False # Documentation open in this server session?
+
+houses = []
+
 
 class Advancement(ft.UserControl):
     def __init__(self, title: str, description: str, icon: ft.Icon):
@@ -201,12 +204,13 @@ def main(page: ft.Page) -> NoReturn:
             print("[MainThread/Generators => 1] not enough silicon")
             
     def handleSellSilicon(e):
+        global silicon, money
         if silicon < 1:
             print("[MainThread/HandleSellSilicon => If?] Not enough!")
         elif silicon > 1:
             for i in range(silicon.__floor__()):
-                if silicon > 1: silicon -= 1; money += 10
-                else: continue
+                if silicon > 1: silicon -= 1; money += 0.7
+                else: print("[MainThread/HandleSellSilicon => If?] Enough but also not?"); continue
                 
 
     def handleNewSave(e) -> None:
@@ -659,7 +663,7 @@ def main(page: ft.Page) -> NoReturn:
             adv_firstgen.if_completed()
         elif page.route == "/debug":
             global documentation_open
-            if not documentation_open: Popen(["python3.9","docs/no_run_scripts/main.py"])
+            if not documentation_open: Popen(["python3.9","docs/engine/loader.py"])
             else: print("[MainThread/Debug => Documentation] Documentation already open (Server)!")
             documentation_open = True
             page.scroll = ft.ScrollMode.ALWAYS
@@ -719,8 +723,9 @@ def main(page: ft.Page) -> NoReturn:
                         ft.Text("1.7.5 | I completely forgot what i did in this update lmao"),
                         ft.Text("1.7.6 | Fix not being able to signup"),
                         ft.Text("1.7.7 | Fix not being able to signup again..."),
-                        
-                        ft.FletApp("http://localhost:8011")
+                        ft.Text("1.8 | Advancements + Documentation"),
+                        ft.Text("1.8 | Please don't complain that I keep forgetting to bump the version!")
+                        # ft.FletApp("http://localhost:8011")
                     ]
                 )
             )
