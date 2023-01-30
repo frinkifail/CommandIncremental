@@ -1,5 +1,6 @@
 from typing import Literal
 import flet as ft
+from flet_toast import ToastV2
 
 VERSION: Literal['2.0'] = "2.0.0"
 
@@ -15,7 +16,9 @@ def app(page: ft.Page) -> None:
                 "/",
                 [
                     ft.AppBar(title=ft.Text("CommandIncremental "+VERSION)),
-                    ft.Text("Hello this is very epic!!!")
+                    ft.Text("Hello this is very epic!!!"),
+                    ToastV2("Ayo what?"),
+                    ToastV2("hmm", "titled")
                     # ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
                 ],
             )
