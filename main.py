@@ -5,6 +5,8 @@ VERSION: Literal['2.0'] = "2.0.0"
 
 def app(page: ft.Page) -> None:
     page.title = "CommandIncremental "+VERSION
+    page.window_title_bar_hidden = True
+    # page.window_title_bar_buttons_hidden = True
 
     def route_change(route):
         page.views.clear()
@@ -12,8 +14,9 @@ def app(page: ft.Page) -> None:
             ft.View(
                 "/",
                 [
-                    ft.AppBar(title=ft.Text("Flet app"), bgcolor=ft.colors.SURFACE_VARIANT),
-                    ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
+                    ft.AppBar(title=ft.Text("CommandIncremental "+VERSION)),
+                    ft.Text("Hello this is very epic!!!")
+                    # ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
                 ],
             )
         )
@@ -37,3 +40,6 @@ def app(page: ft.Page) -> None:
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
+    
+if __name__ == "__main__":
+    ft.app(target=app)
