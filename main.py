@@ -1,16 +1,20 @@
 from typing import Literal
 import flet as ft
 from flet_toast import ToastV2
+import os
 
 VERSION: Literal['2.0'] = "2.0.0"
 
 def app(page: ft.Page) -> None:
     page.title = "CommandIncremental "+VERSION
-    page.window_title_bar_hidden = True
+    if os.name == "nt":
+        page.window_title_bar_hidden = True
+    else:
+        page.window_frameless = True
     # page.window_title_bar_buttons_hidden = True
     
     #### VAR TESTS
-    testnoti = ToastV2("Hello world!", "Test")
+    testnoti = ToastV2("Hello world!", "Test", lambda _: print("Hello World!"))
     #### END VAR TESTS
 
     def route_change(route):
@@ -31,13 +35,14 @@ def app(page: ft.Page) -> None:
                 ],
             )
         )
-        if page.route == "/store":
+        if page.route == "/new_stuff":
             page.views.append(
                 ft.View(
-                    "/store",
+                    "/new_stuff",
                     [
-                        ft.AppBar(title=ft.Text("Store"), bgcolor=ft.colors.SURFACE_VARIANT),
-                        ft.ElevatedButton("Go Home", on_click=lambda _: page.go("/")),
+                        ft.AppBar(title=ft.Text("CommandIncremental | New Stuff")),
+                        ft.Text("wher is my new content???")
+                        # ft.ElevatedButton("Go Home", on_click=lambda _: page.go("/")),
                     ],
                 )
             )
