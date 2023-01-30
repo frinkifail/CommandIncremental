@@ -6,7 +6,7 @@ import os
 import time
 import logging_v2 as log
 
-VERSION: Literal['2.0'] = "2.0.0"
+VERSION: Literal['2.0.1'] = "2.0.1"
 time_delay: float = 0.25
 
 def app(page: ft.Page) -> None:
@@ -26,7 +26,7 @@ def app(page: ft.Page) -> None:
     def reload_all_advs(_):
         testadv.check_if_completed()
         testadv.update()
-        log.debug("successfully reloaded all advancements")
+        # log.debug("successfully reloaded all advancements")
     #### END FUN TEST (sad)
     
     #### VAR TESTS
@@ -87,6 +87,7 @@ def app(page: ft.Page) -> None:
         #     # print("opp- error")
         #     # log.error(f"ERROR : {e}")
         #     pass
+        reload_all_advs(None)
         time.sleep(time_delay)
     
     # page.views[0].page.overlay.append(ToastV2("hmm", "titled"))
