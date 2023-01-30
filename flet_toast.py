@@ -1,4 +1,5 @@
 import flet as ft
+import time
 
 class Toast(ft.UserControl):
     def __init__(self, value: str, title: str=None):
@@ -18,17 +19,31 @@ class ToastV2(ft.UserControl):
         super().__init__()
         self.title: str | None = title
         self.value: str = value
-    
-    def build(self):
-        return ft.Card(
+        self.control = ft.Card(
             content=ft.Container(
                 content=ft.ListTile(
                             # leading=ft.Icon(ft.icons.ALBUM),
                             title=ft.Text(self.title) if self.title else ft.Text(self.value),
                             subtitle=ft.Text(self.value) if self.title else None,
                         ),
-                # width=400,
+                width=400,
                 padding=10,
                 expand=True,
-            )
+            ),
+            offset=ft.transform.Offset(-2, 0),
+            animate_offset=ft.animation.Animation(1000),
         )
+        
+    def show(self):
+        self.control.offset = ft.transform.Offset(0, 0)
+        self.control.update()
+    def hide(self):
+        self.control.offset = ft.transform.Offset(-2,0)
+        self.control.update()
+    def autorehide(self):
+        self.show()
+        time.sleep(2)
+        self.hide()
+    
+    def build(self):
+        return self.control

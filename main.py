@@ -8,6 +8,10 @@ def app(page: ft.Page) -> None:
     page.title = "CommandIncremental "+VERSION
     page.window_title_bar_hidden = True
     # page.window_title_bar_buttons_hidden = True
+    
+    #### VAR TESTS
+    testnoti = ToastV2("Hello world!", "Test")
+    #### END VAR TESTS
 
     def route_change(route):
         page.views.clear()
@@ -18,7 +22,11 @@ def app(page: ft.Page) -> None:
                     ft.AppBar(title=ft.Text("CommandIncremental "+VERSION)),
                     ft.Text("Hello this is very epic!!!"),
                     ToastV2("Ayo what?"),
-                    ToastV2("hmm", "titled")
+                    ToastV2("hmm", "titled"),
+                    ft.ElevatedButton('Reveal', on_click=lambda _: testnoti.show()),
+                    ft.ElevatedButton('Hide', on_click=lambda _: testnoti.hide()),
+                    ft.ElevatedButton('Autohide', on_click=lambda _: testnoti.autorehide()),
+                    testnoti
                     # ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
                 ],
             )
@@ -43,6 +51,7 @@ def app(page: ft.Page) -> None:
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
+    # page.views[0].page.overlay.append(ToastV2("hmm", "titled"))
     
 if __name__ == "__main__":
     ft.app(target=app)
