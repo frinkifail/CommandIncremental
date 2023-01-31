@@ -20,7 +20,7 @@ data = {
                 "cost":10,  # ^ put that since im dumb and will forgor
                 "growth":1.08, # yeah im dumb since i put that in the wrong line
                 "generates":0.1,
-                "body":GeneratorCard("Your first generator. The cheapest one infact.", ft.icons.FACTORY, "Gen SILICA-00")
+                "body":GeneratorCard("Your first generator. The cheapest one infact.", ft.Icon(ft.icons.FACTORY), "Gen SILICA-00")
             },
             "materials-per-gen":0,
             "money":10,
