@@ -22,7 +22,7 @@ class GeneratorCard(ft.UserControl):
                 expand=True,
                 on_click=self.on_click
             ),
-            offset=ft.transform.Offset(-2, 0),
+            offset=ft.transform.Offset(0, 0),
             animate_offset=ft.animation.Animation(1000),
         )
     def show(self):

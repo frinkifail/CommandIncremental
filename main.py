@@ -161,10 +161,11 @@ def app(page: ft.Page) -> None:
     page.on_view_pop = view_pop
     page.go(page.route)
     
-    while not newcomer_adv.shown or not clicked_adv.shown:
+    while not newcomer_adv.shown or not clicked_adv.shown or not data["quantux"]["1"]["gen-01"]["body"].shown:
         try:
             newcomer_adv.show()
             clicked_adv.show()
+            data["quantux"]["1"]["gen-01"]["body"].show()
         except:
             pass
     while not newcomer_adv.completed:
