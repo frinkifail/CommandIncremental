@@ -181,15 +181,6 @@ def app(page: ft.Page) -> None:
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
-    
-    while not newcomer_adv.shown or not clicked_adv.shown:
-        try:
-            newcomer_adv.show()
-            clicked_adv.show()
-            # data["quantux"]["1"]["gen-01"]["body"].show()
-        except Exception as e:
-            log.error(f"ERROR: {e}")
-            pass
     while not newcomer_adv.completed:
         newcomer_adv.complete()
     # testadv.check_if_completed()
@@ -201,6 +192,14 @@ def app(page: ft.Page) -> None:
         #     # print("opp- error")
         #     # log.error(f"ERROR : {e}")
         #     pass
+        if not newcomer_adv.shown or not clicked_adv.shown:
+            try:
+                newcomer_adv.show()
+                clicked_adv.show()
+                # data["quantux"]["1"]["gen-01"]["body"].show()
+            except Exception as e:
+                log.error(f"ERROR: {e}")
+                pass
         if clicked_adv.completed:
             clicked_adv.value = "Click the advancement card."
             clicked_adv.update_text()
