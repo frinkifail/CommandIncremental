@@ -2,13 +2,41 @@ from typing import Literal
 import flet as ft
 from flet_toast import ToastV2
 from command.advancements import Advancement
+from command.generators import GeneratorCard
 import os
 import time
 import logging_v2 as log
 from progressbar_v2 import prange
 
-VERSION: Literal['2.0.1'] = "2.0.1"
+VERSION: Literal['2.0.2'] = "2.0.2"
 time_delay: float = 0.25
+
+data = {
+    "quantux":{
+        "1":{
+            "materials":0, # silicon âฺüึgุhี
+            "gen-01":{
+                "amount":0, # ok incase i forgor this uses money and not materials
+                "cost":10,  # ^ put that since im dumb and will forgor
+                "growth":1.08, # yeah im dumb since i put that in the wrong line
+                "generates":0.1,
+                "body":GeneratorCard("Your first generator. The cheapest one infact.", ft.icons.FACTORY, "Gen SILICA-00")
+            },
+            "materials-per-gen":0,
+            "money":10,
+            "money-per-gen":0,
+            "houses":[], # example:
+            # "houses":[
+                #{
+                    #name: "RANDOMLY GENERATED",
+                    #generating: 69,
+                    #happyratio: 420 # max from 0-100 floating number but not now
+                #}
+            #]
+            "gen-time":1
+        }
+    }
+}
 
 def app(page: ft.Page) -> None:
     page.title = "CommandIncremental "+VERSION
@@ -45,6 +73,12 @@ def app(page: ft.Page) -> None:
     newcomer_adv = Advancement("Play the game.", ft.Icon(ft.icons.PLAY_ARROW), "Newcomer")
     clicked_adv = Advancement("???", ft.Icon(ft.icons.MOUSE), "Clicker game?", onclick=lambda _: clicked_adv.complete())
     #### END ADV VARS
+    #### GAME VARS
+    
+    #### END GAME VARS
+    #### GEN VARS
+    
+    #### END GEN VARS
 
     def route_change(route):
         page.views.clear()
@@ -53,17 +87,19 @@ def app(page: ft.Page) -> None:
             ft.View(
                 "/",
                 [
-                    ft.AppBar(title=ft.Text("CommandIncremental "+VERSION), actions=[
-                        ft.IconButton(ft.icons.EMOJI_EVENTS, on_click=lambda _: page.go("/advancements"))
+                    ft.AppBar(title=ft.Text("CommandIncremental "+VERSION, tooltip="cmd incremental - the game"), actions=[
+                        ft.IconButton(ft.icons.EMOJI_EVENTS, on_click=lambda _: page.go("/advancements"), tooltip="advancing in life"),
+                        ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="upgrading life")
                     ]),
-                    ft.Text("Hello this is very epic!!!"),
+                    # ft.Text("Hello this is very epic!!!"),
+                    ft.Text("home page placeholder"),
                     # ToastV2("Ayo what?"),
                     # ToastV2("hmm", "titled"),
-                    ft.ElevatedButton('Reveal', on_click=lambda _: testnoti.show()),
-                    ft.ElevatedButton('Hide', on_click=lambda _: testnoti.hide()),
-                    ft.ElevatedButton('Autohide', on_click=lambda _: testnoti.autorehide()),
+                    # ft.ElevatedButton('Reveal', on_click=lambda _: testnoti.show()),
+                    # ft.ElevatedButton('Hide', on_click=lambda _: testnoti.hide()),
+                    # ft.ElevatedButton('Autohide', on_click=lambda _: testnoti.autorehide()),
                     # testnoti,
-                    ft.ElevatedButton("Summon Progressbar", on_click=lambda _: prange(100, 0, 1, None, "summoned progressbar from flet", None))
+                    # ft.ElevatedButton("Summon Progressbar", on_click=lambda _: prange(100, 0, 1, None, "summoned progressbar from flet", None))
                     # ft.FilledTonalButton("reload all advs", on_click=reload_all_advs),
                     # ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
                 ]
@@ -86,9 +122,31 @@ def app(page: ft.Page) -> None:
             page.views.append(
                 ft.View(
                     "/advancements", [
-                        ft.AppBar(title=ft.Text("CommandIncremental | Advancements")),
-                        newcomer_adv,
-                        clicked_adv
+                        ft.AppBar(title=ft.Text("CommandIncremental | Advancements", tooltip="advancing in life")),
+                        ft.Row([newcomer_adv,
+                        clicked_adv])
+                    ]
+                )
+            )
+        elif page.route == "/upgrades":
+            page.views.append(
+                ft.View(
+                    "/upgrades", [
+                        ft.AppBar(title=ft.Text("CommandIncremental | Upgrades"), actions=[
+                            ft.IconButton(ft.icons.FACTORY, on_click=lambda _: page.go("/upgrades/generators"), tooltip="generators")
+                        ]),
+                        ft.Text("Work In Progress")
+                    ]
+                )
+            )
+            pass
+        elif page.route == "/upgrades/generators":
+            page.views.append(
+                ft.View(
+                    "/upgrades/generators", [
+                        ft.AppBar(title=ft.Text("CommandIncremental | Upgrades -> Generators")),
+                        ft.Text("Work In Progress"),
+                        data["quantux"]["1"]["gen-01"]["body"]
                     ]
                 )
             )
