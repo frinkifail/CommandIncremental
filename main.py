@@ -8,7 +8,7 @@ import time
 import logging_v2 as log
 from progressbar_v2 import prange
 
-VERSION: Literal['2.0.2'] = "2.0.2"
+VERSION: Literal['2.0.3'] = "2.0.3"
 time_delay: float = 0.25
 
 data = {
@@ -20,7 +20,7 @@ data = {
                 "cost":10,  # ^ put that since im dumb and will forgor
                 "growth":1.08, # yeah im dumb since i put that in the wrong line
                 "generates":0.1,
-                "body":GeneratorCard("Your first generator. The cheapest one infact.", ft.Icon(ft.icons.FACTORY), "Gen SILICA-00")
+                "body":None
             },
             "materials-per-gen":0,
             "money":10,
@@ -76,9 +76,30 @@ def app(page: ft.Page) -> None:
     #### GAME VARS
     
     #### END GAME VARS
-    #### GEN VARS
+    #### GEN FUN
+    def _0_1_01(_): # buy generator quantux 1 01 # [_0 = buy generator, _1 = quantux 1, _01 = generator 01]
+        if data["quantux"]["1"]["money"] >= data["quantux"]["1"]["gen-01"]["cost"]:
+            log.info("user has enough")
+            data["quantux"]["1"]["money"] -= data["quantux"]["1"]["gen-01"]["cost"]
+            data["quantux"]["1"]["gen-01"]["amount"] += 1
+            data["quantux"]["1"]["gen-01"]["cost"] *= data["quantux"]["1"]["gen-01"]["growth"]
+        else:
+            log.info("user don't have enough")
+        data["quantux"]["1"]["gen-01"]["body"].set_trailing(ft.Text(str(data["quantux"]["1"]["gen-01"]["amount"]), style=ft.TextThemeStyle.BODY_LARGE))
+    #### END GEN FUN :((((((
     
+    #### GEN VARS
+    data["quantux"]["1"]["gen-01"]["body"] = GeneratorCard("Your first generator. The cheapest one infact.", ft.Icon(ft.icons.FACTORY), "Gen SILICA-00", _0_1_01)
     #### END GEN VARS
+    
+    #### GAME FUN
+    def _1_1_0(): # game update data # [_1 = game stuff, _1 = quantux 1, _0 = update data]
+        data["quantux"]["1"]["materials-per-gen"] = (data["quantux"]["1"]["gen-01"]["amount"]*data["quantux"]["1"]["gen-01"]["generates"])
+        data["quantux"]["1"]["materials"] += data["quantux"]["1"]["materials-per-gen"]
+        data["quantux"]["1"]["money"] += data["quantux"]["1"]["money-per-gen"]
+        pass
+    #### END GAME FUN (nooooo no more game fun)
+    
 
     def route_change(route):
         page.views.clear()
@@ -161,12 +182,13 @@ def app(page: ft.Page) -> None:
     page.on_view_pop = view_pop
     page.go(page.route)
     
-    while not newcomer_adv.shown or not clicked_adv.shown or not data["quantux"]["1"]["gen-01"]["body"].shown:
+    while not newcomer_adv.shown or not clicked_adv.shown:
         try:
             newcomer_adv.show()
             clicked_adv.show()
-            data["quantux"]["1"]["gen-01"]["body"].show()
-        except:
+            # data["quantux"]["1"]["gen-01"]["body"].show()
+        except Exception as e:
+            log.error(f"ERROR: {e}")
             pass
     while not newcomer_adv.completed:
         newcomer_adv.complete()
@@ -186,6 +208,7 @@ def app(page: ft.Page) -> None:
             reload_all_advs(None)
         except:
             pass
+        _1_1_0()
         time.sleep(time_delay)
     
     # page.views[0].page.overlay.append(ToastV2("hmm", "titled"))
