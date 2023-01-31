@@ -33,6 +33,11 @@ class GeneratorCard(ft.UserControl):
         self.control.offset = ft.transform.Offset(-2,0)
         self.control.update()
         self.shown = False
+    def set_trailing(self, trailing: ft.Control):
+        self.control.content.content.trailing = trailing
+        self.control.update()
+        self.control.content.update()
+        self.control.content.content.update()
     # def autorehide(self):
     #     self.show()
     #     time.sleep(2)
