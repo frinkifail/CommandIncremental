@@ -5,6 +5,7 @@ from command.advancements import Advancement
 import os
 import time
 import logging_v2 as log
+from progressbar_v2 import prange
 
 VERSION: Literal['2.0.1'] = "2.0.1"
 time_delay: float = 0.25
@@ -18,43 +19,57 @@ def app(page: ft.Page) -> None:
         page.window_frameless = True
     # page.window_title_bar_buttons_hidden = True
     
-    #### FUN TESTS
-    def complete_testadv(_):
-        testadv.complete()
-        # print("complete")
-        log.debug("complete")
+    #### ADV FUN
     def reload_all_advs(_):
-        testadv.check_if_completed()
-        testadv.update()
+        newcomer_adv.check_if_completed()
+        newcomer_adv.update()
+        clicked_adv.check_if_completed()
+        clicked_adv.update()
+    #### END ADV FUN
+    
+    #### FUN TESTS
+    # def complete_testadv(_):
+    #     newcomer_adv.complete()
+    #     # print("complete")
+    #     log.debug("complete")
+    
         # log.debug("successfully reloaded all advancements")
     #### END FUN TEST (sad)
     
     #### VAR TESTS
     testnoti = ToastV2("Hello world!", "Test", lambda _: print("Hello World!"))
-    testadv = Advancement("Play the game.", ft.Icon(ft.icons.PLAY_ARROW), "Newcomer", complete_testadv)
+    
     # time.sleep(1)
     #### END VAR TESTS
+    #### ADV VARS
+    newcomer_adv = Advancement("Play the game.", ft.Icon(ft.icons.PLAY_ARROW), "Newcomer")
+    clicked_adv = Advancement("???", ft.Icon(ft.icons.MOUSE), "Clicker game?", onclick=lambda _: clicked_adv.complete())
+    #### END ADV VARS
 
     def route_change(route):
         page.views.clear()
+        page.overlay.clear()
         page.views.append(
             ft.View(
                 "/",
                 [
-                    ft.AppBar(title=ft.Text("CommandIncremental "+VERSION)),
+                    ft.AppBar(title=ft.Text("CommandIncremental "+VERSION), actions=[
+                        ft.IconButton(ft.icons.EMOJI_EVENTS, on_click=lambda _: page.go("/advancements"))
+                    ]),
                     ft.Text("Hello this is very epic!!!"),
-                    ToastV2("Ayo what?"),
-                    ToastV2("hmm", "titled"),
+                    # ToastV2("Ayo what?"),
+                    # ToastV2("hmm", "titled"),
                     ft.ElevatedButton('Reveal', on_click=lambda _: testnoti.show()),
                     ft.ElevatedButton('Hide', on_click=lambda _: testnoti.hide()),
                     ft.ElevatedButton('Autohide', on_click=lambda _: testnoti.autorehide()),
-                    testnoti,
-                    testadv,
-                    ft.FilledTonalButton("reload all advs", on_click=reload_all_advs),
+                    # testnoti,
+                    ft.ElevatedButton("Summon Progressbar", on_click=lambda _: prange(100, 0, 1, None, "summoned progressbar from flet", None))
+                    # ft.FilledTonalButton("reload all advs", on_click=reload_all_advs),
                     # ft.ElevatedButton("Visit Store", on_click=lambda _: page.go("/store")),
-                ],
+                ]
             )
         )
+        page.overlay.append(testnoti)
         # testadv.show()
         if page.route == "/new_stuff":
             page.views.append(
@@ -67,6 +82,16 @@ def app(page: ft.Page) -> None:
                     ],
                 )
             )
+        elif page.route == "/advancements":
+            page.views.append(
+                ft.View(
+                    "/advancements", [
+                        ft.AppBar(title=ft.Text("CommandIncremental | Advancements")),
+                        newcomer_adv,
+                        clicked_adv
+                    ]
+                )
+            )
         page.update()
 
     def view_pop(view):
@@ -77,7 +102,15 @@ def app(page: ft.Page) -> None:
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.go(page.route)
-    testadv.show()
+    
+    while not newcomer_adv.shown or not clicked_adv.shown:
+        try:
+            newcomer_adv.show()
+            clicked_adv.show()
+        except:
+            pass
+    while not newcomer_adv.completed:
+        newcomer_adv.complete()
     # testadv.check_if_completed()
     while True:
         # testadv.update()
@@ -87,7 +120,13 @@ def app(page: ft.Page) -> None:
         #     # print("opp- error")
         #     # log.error(f"ERROR : {e}")
         #     pass
-        reload_all_advs(None)
+        if clicked_adv.completed:
+            clicked_adv.value = "Click the advancement card."
+            clicked_adv.update_text()
+        try:
+            reload_all_advs(None)
+        except:
+            pass
         time.sleep(time_delay)
     
     # page.views[0].page.overlay.append(ToastV2("hmm", "titled"))

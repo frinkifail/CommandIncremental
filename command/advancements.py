@@ -9,6 +9,7 @@ class Advancement(ft.UserControl):
         self.on_click = onclick
         self.icon = icon
         self.completed = False
+        self.shown = False
         self.control = ft.Card(
             content=ft.Container(
                 content=ft.ListTile(
@@ -27,31 +28,36 @@ class Advancement(ft.UserControl):
     def show(self):
         self.control.offset = ft.transform.Offset(0, 0)
         self.control.update()
+        self.shown = True
     def hide(self):
         self.control.offset = ft.transform.Offset(-2,0)
         self.control.update()
+        self.shown = False
     # def autorehide(self):
     #     self.show()
     #     time.sleep(2)
     #     self.hide()
     def complete(self):
         self.completed = True
-        print(f"completed called in {self.title}/{self.value}")
+        # print(f"completed called in {self.title}/{self.value}")
     def uncomplete(self):
         self.completed = False
-        print(f"uncompleted called in {self.title}/{self.value}")
+        # print(f"uncompleted called in {self.title}/{self.value}")
     def check_if_completed(self):
         if self.completed:
-            print(self.control.content)
-            print(self.control.content.content)
+            # print(self.control.content)
+            # print(self.control.content.content)
             self.control.content.content.trailing = ft.Icon(ft.icons.CHECK, color=ft.colors.GREEN_ACCENT)
             # self.control.update()
-            print(f'{self.title}/{self.value} is completed')
+            # print(f'{self.title}/{self.value} is completed')
         else:
-            print(self.control.content)
-            print(self.control.content.content)
+            # print(self.control.content)
+            # print(self.control.content.content)
             self.control.content.content.trailing = ft.Icon(ft.icons.CLOSE, color=ft.colors.RED_ACCENT)
             # self.control.update()
-            print(f'{self.title}/{self.value} is not completed')
+            # print(f'{self.title}/{self.value} is not completed')
+    def update_text(self):
+        self.control.content.content.title = ft.Text(str(self.title))
+        self.control.content.content.subtitle = ft.Text(str(self.value))
     def build(self):
         return self.control
