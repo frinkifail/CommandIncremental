@@ -33,7 +33,22 @@ data = {
                     #happyratio: 420 # max from 0-100 floating number but not now
                 #}
             #]
-            "gen-time":1
+            "gen-time":1,
+            "materials-display": ft.Text("[LOADING]"),
+            "money-display": ft.Text("[LOADING]"), # ok maybe selling silicon is scrapped # ill probably do smth like uhh make pc parts bitcoin mining thing?
+            "pc-parts":{},
+            # example:
+            # "pc-parts": {
+                #{
+                    #name: "PC #01",
+                    #parts: {
+                        #"cpu":"SOMERANDOMTHING-0000",
+                        #"ram":{"display":"SOMETHING-0000","value":1},
+                        #
+                    #}
+                #}
+            #}
+            "bmc_data":{None:...}
         }
     }
 }
@@ -74,8 +89,19 @@ def app(page: ft.Page) -> None:
     clicked_adv = Advancement("???", ft.Icon(ft.icons.MOUSE), "Clicker game?", onclick=lambda _: clicked_adv.complete())
     #### END ADV VARS
     #### GAME VARS
-    
+
     #### END GAME VARS
+    #### SETTING FUN
+    def handle_check_dtc(e):
+        if dark_theme_checkbox.value is True:
+            page.theme_mode = ft.ThemeMode.DARK
+        else:
+            page.theme_mode = ft.ThemeMode.LIGHT
+        page.update()
+    #### END SETTING FUN (very sad)
+    #### SETTING VARS
+    dark_theme_checkbox = ft.Checkbox(label="Dark Theme", on_change=handle_check_dtc, value=True) # spookers
+    #### END SETTING VARS
     #### GEN FUN
     def _0_1_01(_): # buy generator quantux 1 01 # [_0 = buy generator, _1 = quantux 1, _01 = generator 01]
         if data["quantux"]["1"]["money"] >= data["quantux"]["1"]["gen-01"]["cost"]:
@@ -83,6 +109,9 @@ def app(page: ft.Page) -> None:
             data["quantux"]["1"]["money"] -= data["quantux"]["1"]["gen-01"]["cost"]
             data["quantux"]["1"]["gen-01"]["amount"] += 1
             data["quantux"]["1"]["gen-01"]["cost"] *= data["quantux"]["1"]["gen-01"]["growth"]
+            data["quantux"]["1"]["gen-01"]["body"].control.tooltip = "Your first generator. The cheapest one infact."
+            data["quantux"]["1"]["gen-01"]["body"].value = "Cost: {}".format(data["quantux"]["1"]["gen-01"]["cost"])
+            data["quantux"]["1"]["gen-01"]["body"].update_all()
         else:
             log.info("user don't have enough")
         data["quantux"]["1"]["gen-01"]["body"].set_trailing(ft.Text(str(data["quantux"]["1"]["gen-01"]["amount"]), style=ft.TextThemeStyle.BODY_LARGE))
@@ -93,11 +122,17 @@ def app(page: ft.Page) -> None:
     #### END GEN VARS
     
     #### GAME FUN
-    def _1_1_0(): # game update data # [_1 = game stuff, _1 = quantux 1, _0 = update data]
+    def _1_1_0(): # game update data # [_1 = game stuff, _1 = quantux 1, _0 = update displays and data]
         data["quantux"]["1"]["materials-per-gen"] = (data["quantux"]["1"]["gen-01"]["amount"]*data["quantux"]["1"]["gen-01"]["generates"])
+        data["quantux"]["1"]["materials-display"].value = "Silicon: {}".format(data["quantux"]["1"]["materials"])
+        data["quantux"]["1"]["money-display"].value = "Simulons: {}".format(data["quantux"]["1"]["money"])
+        data["quantux"]["1"]["money-display"].update()
+        data["quantux"]["1"]["materials-display"].update()
+        pass
+    def _1_1_1(): # game update data (data (actual data (trust (me))))
         data["quantux"]["1"]["materials"] += data["quantux"]["1"]["materials-per-gen"]
         data["quantux"]["1"]["money"] += data["quantux"]["1"]["money-per-gen"]
-        pass
+        time.sleep(data["quantux"]["1"]["gen-time"])
     #### END GAME FUN (nooooo no more game fun)
     
 
@@ -110,10 +145,13 @@ def app(page: ft.Page) -> None:
                 [
                     ft.AppBar(title=ft.Text("CommandIncremental "+VERSION, tooltip="cmd incremental - the game"), actions=[
                         ft.IconButton(ft.icons.EMOJI_EVENTS, on_click=lambda _: page.go("/advancements"), tooltip="advancing in life"),
-                        ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="upgrading life")
+                        ft.IconButton(ft.icons.UPGRADE, on_click=lambda _: page.go("/upgrades"), tooltip="upgrading life"),
+                        ft.IconButton(ft.icons.SETTINGS, on_click=lambda _: page.go("/settings"), tooltip="setting life")
                     ]),
                     # ft.Text("Hello this is very epic!!!"),
                     ft.Text("home page placeholder"),
+                    data["quantux"]["1"]["money-display"],
+                    data["quantux"]["1"]["materials-display"]
                     # ToastV2("Ayo what?"),
                     # ToastV2("hmm", "titled"),
                     # ft.ElevatedButton('Reveal', on_click=lambda _: testnoti.show()),
@@ -149,7 +187,7 @@ def app(page: ft.Page) -> None:
                     ]
                 )
             )
-        elif page.route == "/upgrades":
+        elif page.route.startswith("/upgrades"):
             page.views.append(
                 ft.View(
                     "/upgrades", [
@@ -161,16 +199,27 @@ def app(page: ft.Page) -> None:
                 )
             )
             pass
-        elif page.route == "/upgrades/generators":
+            if page.route == "/upgrades/generators":
+                page.views.append(
+                    ft.View(
+                        "/upgrades/generators", [
+                            ft.AppBar(title=ft.Text("CommandIncremental | Upgrades -> Generators")),
+                            ft.Text("Work In Progress"),
+                            data["quantux"]["1"]["gen-01"]["body"]
+                        ]
+                    )
+                )
+        elif page.route.startswith("/settings"):
             page.views.append(
                 ft.View(
-                    "/upgrades/generators", [
-                        ft.AppBar(title=ft.Text("CommandIncremental | Upgrades -> Generators")),
-                        ft.Text("Work In Progress"),
-                        data["quantux"]["1"]["gen-01"]["body"]
+                    "/settings", [
+                        ft.AppBar(title=ft.Text("CommandIncremental | Settings")),
+                        dark_theme_checkbox
                     ]
                 )
             )
+            if page.route == "/settings/debug":
+                page.views.append(ft.View("/settings/debug"))
         page.update()
 
     def view_pop(view):
@@ -198,7 +247,7 @@ def app(page: ft.Page) -> None:
                 clicked_adv.show()
                 # data["quantux"]["1"]["gen-01"]["body"].show()
             except Exception as e:
-                log.error(f"ERROR: {e}")
+                # log.error(f"ERROR: {e}")
                 pass
         if clicked_adv.completed:
             clicked_adv.value = "Click the advancement card."
@@ -208,6 +257,7 @@ def app(page: ft.Page) -> None:
         except:
             pass
         _1_1_0()
+        _1_1_1()
         time.sleep(time_delay)
     
     # page.views[0].page.overlay.append(ToastV2("hmm", "titled"))

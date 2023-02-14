@@ -38,6 +38,12 @@ class GeneratorCard(ft.UserControl):
         self.control.update()
         self.control.content.update()
         self.control.content.content.update()
+    def update_all(self):
+        self.control.content.content.title = ft.Text(str(self.title))
+        self.control.content.content.subtitle = ft.Text(str(self.value))
+        self.control.update()
+        self.control.content.update()
+        self.control.content.content.update()
     # def autorehide(self):
     #     self.show()
     #     time.sleep(2)
