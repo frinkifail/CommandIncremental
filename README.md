@@ -18,3 +18,4 @@ ok here we go
 
 ## Credits
 @frinkifail (me) (still me) (the only person)
+### This is discontinued (discontinued) (still discontinued) (the only discontinuation)
