@@ -1,4 +1,5 @@
 # CommandIncremental
+### This is discontinued!
 
 [![optimization - 0%](https://img.shields.io/badge/optimization-0%25-red?style=for-the-badge)](https://)
 [![approved by - myself](https://img.shields.io/badge/approved_by-myself-blueviolet?style=for-the-badge)](https://)
